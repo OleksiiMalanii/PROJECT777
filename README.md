@@ -1,2 +1,2 @@
 # PROJECT777
-The Online Casino Simulation is a web-based application that mimics the experience of an online casino.
+The Online mini games Simulation is a web-based application that mimics the experience of an online mini games sites.
