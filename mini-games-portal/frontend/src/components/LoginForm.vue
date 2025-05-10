@@ -1,94 +1,79 @@
 <template>
-  <div class="login-form">
-    <h2 class="login-form__title">Увійти</h2>
-    <div class="field-group">
-      <label for="username" class="field-label">Ім'я користувача</label>
+  <form
+      @submit.prevent="submit"
+      class="space-y-4"
+  >
+    <h2
+        class="text-2xl font-bold text-gray-800 dark:text-gray-100 text-center"
+    >
+      Увійти
+    </h2>
+
+    <div>
+      <label
+          class="block mb-1 text-gray-700 dark:text-gray-300"
+          for="email"
+      >
+        Email
+      </label>
       <input
-          id="username"
-          type="text"
-          v-model="localName"
-          class="field-input"
+          id="email"
+          v-model="email"
+          type="email"
+          required
+          placeholder="you@example.com"
+          class="w-full px-4 py-2
+               rounded-xl
+               border border-gray-300 dark:border-gray-600
+               bg-gray-50 dark:bg-gray-700
+               text-gray-900 dark:text-gray-100
+               placeholder-gray-500 dark:placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-primary"
       />
     </div>
+
+    <div>
+      <label
+          class="block mb-1 text-gray-700 dark:text-gray-300"
+          for="password"
+      >
+        Пароль
+      </label>
+      <input
+          id="password"
+          v-model="password"
+          type="password"
+          required
+          placeholder="••••••••"
+          class="w-full px-4 py-2
+               rounded-xl
+               border border-gray-300 dark:border-gray-600
+               bg-gray-50 dark:bg-gray-700
+               text-gray-900 dark:text-gray-100
+               placeholder-gray-500 dark:placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-primary"
+      />
+    </div>
+
     <button
-        class="submit-button"
-        @click="login"
+        type="submit"
+        class="w-full py-2
+             bg-primary text-white
+             rounded-2xl
+             hover:bg-primary-dark transition"
     >
       Увійти
     </button>
-  </div>
+  </form>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+const email = ref('')
+const password = ref('')
+const emit = defineEmits(['login'])
 
-export default {
-  name: 'LoginForm',
-  setup() {
-    const userStore = useUserStore()
-    const router = useRouter()
-    const localName = ref('')
-
-    const login = () => {
-      if (localName.value) {
-        userStore.loginUser(localName.value)
-        router.push('/')
-      }
-    }
-
-    return { localName, login }
-  }
+function submit() {
+  emit('login', { email: email.value, password: password.value })
 }
 </script>
-
-<style scoped>
-.login-form {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.login-form__title {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.field-group {
-  margin-bottom: 1.2rem;
-}
-
-.field-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.field-input {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.submit-button {
-  width: 100%;
-  padding: 0.8rem;
-  background-color: #0d6efd;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.submit-button:hover {
-  background-color: #0b5ed7;
-}
-
-</style>

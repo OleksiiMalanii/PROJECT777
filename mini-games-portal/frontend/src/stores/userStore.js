@@ -10,6 +10,12 @@ export const useUserStore = defineStore('user', {
             this.username = name
             localStorage.setItem('username', name)
         },
+        logoutUser() {
+            this.username = ''
+            localStorage.removeItem('username')
+            this.gameHistory = []
+            localStorage.removeItem('gameHistory')
+        },
         addGameToHistory(gameName) {
             const record = {
                 game: gameName,

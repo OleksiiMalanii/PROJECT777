@@ -1,130 +1,92 @@
 <template>
-  <div class="app-container">
-    <!-- Навігація -->
-    <nav class="navigation">
-      <div class="navigation__inner">
-        <h1 class="navigation__logo">Mini-Games</h1>
-        <div class="navigation__links">
-          <router-link to="/" class="nav-link">Головна</router-link>
-          <router-link to="/login" class="nav-link">Увійти</router-link>
-          <router-link to="/history" class="nav-link">Історія ігор</router-link>
-        </div>
-      </div>
-    </nav>
+  <div
+      class="flex flex-col min-h-screen
+           bg-gray-50 dark:bg-gray-900
+           text-gray-800 dark:text-gray-200
+           font-sans transition-colors"
+  >
 
-    <!-- Герой-секція -->
-    <section class="hero-section">
-      <div class="hero-section__inner">
-        <h2 class="hero-title">Ласкаво просимо до 777!</h2>
-        <p class="hero-subtitle">
-          Обирайте гру на свій смак та розважайтесь у будь-який час!
-        </p>
-        <router-link
-            to="/login"
-            class="hero-button"
-        >
-          Почати гру
-        </router-link>
+    <header class="bg-white dark:bg-gray-800 shadow-md">
+      <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-primary">MiniGames Hub</h1>
+        <nav class="flex items-center space-x-4">
+          <router-link to="/" class="hover:text-primary transition">Головна</router-link>
+          <router-link
+              v-if="userStore.username"
+              to="/history"
+              class="hover:text-primary transition"
+          >
+            Історія
+          </router-link>
+          <router-link
+              v-if="!userStore.username"
+              to="/login"
+              class="hover:text-primary transition"
+          >
+            Увійти
+          </router-link>
+          <router-link
+              v-if="!userStore.username"
+              to="/register"
+              class="hover:text-primary transition"
+          >
+            Реєстрація
+          </router-link>
+          <button
+              v-if="userStore.username"
+              @click="logout"
+              class="hover:text-red-500 transition font-medium"
+          >
+            Вийти
+          </button>
+          <button
+              @click="toggleDark"
+              class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              :aria-label="isDark ? 'Світла тема' : 'Темна тема'"
+          >
+            <span v-if="!isDark">🌙</span>
+            <span v-else>☀️</span>
+          </button>
+        </nav>
       </div>
-    </section>
+    </header>
 
-    <!-- Основний контент -->
-    <main class="main-content">
+
+    <main class="flex-grow container mx-auto px-6 py-8">
       <router-view />
     </main>
 
-    <!-- Футер -->
-    <footer class="footer-section">
-      © Ваша Компанія, {{ new Date().getFullYear() }}. Всі права захищені.
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800">
+      <div class="container mx-auto px-6 text-center py-4 text-sm">
+        &copy; {{ new Date().getFullYear() }} MiniGames Hub. Всі права захищені.
+      </div>
     </footer>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'App'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+
+const isDark = ref(false)
+
+
+onMounted(() => {
+  isDark.value = document.documentElement.classList.contains('dark')
+})
+
+
+function toggleDark() {
+  isDark.value = !isDark.value
+  document.documentElement.classList.toggle('dark')
+}
+
+
+const userStore = useUserStore()
+
+
+function logout() {
+  userStore.logoutUser()
 }
 </script>
-
-<style scoped>
-.app-container {
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-  background: #f9f9f9;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.navigation {
-  background-color: #0d6efd;
-  padding: 1rem 2rem;
-  color: white;
-}
-
-.navigation__inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.navigation__logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.navigation__links .nav-link {
-  margin-left: 1rem;
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.nav-link:hover {
-  text-decoration: underline;
-}
-
-.hero-section {
-  background: linear-gradient(135deg, #007bff, #6610f2);
-  color: white;
-  padding: 3rem 1rem;
-  text-align: center;
-}
-
-.hero-title {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.hero-subtitle {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-}
-
-.hero-button {
-  background-color: white;
-  color: #007bff;
-  padding: 0.75rem 1.5rem;
-  font-weight: bold;
-  border-radius: 8px;
-  text-decoration: none;
-}
-
-.hero-button:hover {
-  background-color: #e6e6e6;
-}
-
-.main-content {
-  flex: 1;
-  padding: 2rem;
-}
-
-.footer-section {
-  background-color: #f1f1f1;
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-</style>
