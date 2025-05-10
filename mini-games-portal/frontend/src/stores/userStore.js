@@ -13,12 +13,11 @@ export const useUserStore = defineStore('user', {
         logoutUser() {
             this.username = ''
             localStorage.removeItem('username')
-            this.gameHistory = []
-            localStorage.removeItem('gameHistory')
         },
-        addGameToHistory(gameName) {
+        addGameToHistory(gameName, score = null) {
             const record = {
                 game: gameName,
+                score: score,
                 date: new Date().toLocaleString()
             }
             this.gameHistory.push(record)
