@@ -6,6 +6,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import HistoryView from '@/views/HistoryView.vue'
 import GameView    from '@/views/GameView.vue'
 import CandyCrushView from '@/views/CandyCrushView.vue'
+import MinesweeperView from "@/views/MinesweeperView.vue";
 
 const routes = [
     { path: '/',            name: 'home',       component: HomeView },
@@ -13,7 +14,8 @@ const routes = [
     { path: '/register',    name: 'register',   component: RegisterView },
     { path: '/history',     name: 'history',    component: HistoryView,    meta: { requiresAuth: true } },
     { path: '/game/:name',  name: 'game',       component: GameView,       props: true, meta: { requiresAuth: true } },
-    { path: '/candycrush',  name: 'candycrush', component: CandyCrushView, meta: { requiresAuth: true } }
+    { path: '/candycrush',  name: 'candycrush', component: CandyCrushView, meta: { requiresAuth: true } },
+    { path: '/minesweeper',  name: 'minesweeper', component: MinesweeperView, meta: { requiresAuth: true } }
 ]
 
 const router = createRouter({

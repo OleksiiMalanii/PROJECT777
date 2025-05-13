@@ -22,16 +22,20 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const games = ref([
-  { name: 'TicTacToe',  title: 'Хрестики/Нулики', img: '/src/assets/img/xo.png' },
-  { name: 'Memory',     title: 'Пам’ять',         img: '/src/assets/img/memory.png' },
-  { name: 'CandyCrush', title: 'Candy Crush',    img: '/src/assets/candycrush.png' }
+  { name: 'TicTacToe', title: 'Хрестики/Нулики', img: '/src/assets/img/xo.png' },
+  { name: 'Minesweeper', title: 'Minesweeper', img: '/src/assets/minesweeper.webp' },
+  { name: 'CandyCrush', title: 'Candy Crush', img: '/src/assets/candycrush.png' }
 ])
 
 function startGame(game) {
   userStore.addGameToHistory(game.title)
   if (game.name === 'CandyCrush') {
     router.push({ name: 'candycrush' })
-  } else {
+  }
+  else if (game.name === 'Minesweeper') {
+    router.push({ name: 'minesweeper' })
+  }
+  else {
     router.push({ name: 'game', params: { name: game.name } })
   }
 }

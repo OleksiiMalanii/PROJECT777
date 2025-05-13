@@ -8,7 +8,7 @@
 
     <header class="bg-green-600 dark:bg-gray-800 shadow-md">
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-green-900 dark:text-white">MiniGames Hub</h1>
+        <h1 class="text-3xl font-bold text-green-900 dark:text-white">Tap&Play</h1>
         <nav class="flex items-center space-x-4">
           <router-link to="/" class="hover:text-green-400 hover:dark:text-gray-600 transition">Головна</router-link>
           <router-link
@@ -59,7 +59,7 @@
     <!-- Footer -->
     <footer class="bg-green-600 dark:bg-gray-800">
       <div class="container mx-auto px-6 text-center py-4 text-sm">
-        &copy; {{ new Date().getFullYear() }} MiniGames Hub. Всі права захищені.
+        &copy; {{ new Date().getFullYear() }} Tap&Play Hub. Всі права захищені.
       </div>
     </footer>
   </div>
