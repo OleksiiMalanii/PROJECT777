@@ -4,14 +4,14 @@
       class="space-y-4"
   >
     <h2
-        class="text-2xl font-bold text-gray-800 dark:text-gray-100 text-center"
+        class="text-2xl font-bold text-green-900 dark:text-gray-100 text-center"
     >
       Увійти
     </h2>
 
     <div>
       <label
-          class="block mb-1 text-gray-700 dark:text-gray-300"
+          class="block mb-1 text-green-900 dark:text-gray-300"
           for="email"
       >
         Email
@@ -24,11 +24,11 @@
           placeholder="you@example.com"
           class="w-full px-4 py-2
                rounded-xl
-               border border-gray-300 dark:border-gray-600
-               bg-gray-50 dark:bg-gray-700
+               border border-green-600 dark:border-gray-600
+               bg-green-400 dark:bg-gray-700
                text-gray-900 dark:text-gray-100
-               placeholder-gray-500 dark:placeholder-gray-400
-               focus:outline-none focus:ring-2 focus:ring-primary"
+               placeholder-green-900 dark:placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-green-600 focus:dark:ring-gray-500"
       />
     </div>
 
@@ -47,20 +47,22 @@
           placeholder="••••••••"
           class="w-full px-4 py-2
                rounded-xl
-               border border-gray-300 dark:border-gray-600
-               bg-gray-50 dark:bg-gray-700
+               border border-green-600 dark:border-gray-600
+               bg-green-400 dark:bg-gray-700
                text-gray-900 dark:text-gray-100
-               placeholder-gray-500 dark:placeholder-gray-400
-               focus:outline-none focus:ring-2 focus:ring-primary"
+               placeholder-green-900 dark:placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-green-600 focus:dark:ring-gray-500"
       />
     </div>
 
     <button
         type="submit"
         class="w-full py-2
-             bg-primary text-white
+             bg-green-600 dark:bg-primary
+             text-green-400 dark:text-white
              rounded-2xl
-             hover:bg-primary-dark transition"
+             hover:bg-green-800
+             hover:dark:bg-primary-dark transition"
     >
       Увійти
     </button>

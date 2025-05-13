@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+  <div class="bg-green-600 dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-4">Ваша історія ігор</h2>
     <GameHistory :records="userStore.gameHistory" :showScore="true" />
   </div>

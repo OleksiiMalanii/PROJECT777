@@ -1,34 +1,34 @@
 <template>
   <div
       class="flex flex-col min-h-screen
-           bg-gray-50 dark:bg-gray-900
-           text-gray-800 dark:text-gray-200
+           bg-green-400 dark:bg-gray-900
+           text-green-800 dark:text-gray-200
            font-sans transition-colors"
   >
 
-    <header class="bg-white dark:bg-gray-800 shadow-md">
+    <header class="bg-green-600 dark:bg-gray-800 shadow-md">
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-primary">MiniGames Hub</h1>
+        <h1 class="text-3xl font-bold text-green-900 dark:text-white">MiniGames Hub</h1>
         <nav class="flex items-center space-x-4">
-          <router-link to="/" class="hover:text-primary transition">Головна</router-link>
+          <router-link to="/" class="hover:text-green-400 hover:dark:text-gray-600 transition">Головна</router-link>
           <router-link
               v-if="userStore.username"
               to="/history"
-              class="hover:text-primary transition"
+              class="hover:text-green-400 hover:dark:text-gray-600 transition"
           >
             Історія
           </router-link>
           <router-link
               v-if="!userStore.username"
               to="/login"
-              class="hover:text-primary transition"
+              class="hover:hover:text-green-400 hover:dark:text-gray-600 transition"
           >
             Увійти
           </router-link>
           <router-link
               v-if="!userStore.username"
               to="/register"
-              class="hover:text-primary transition"
+              class="hover:hover:text-green-400 hover:dark:text-gray-600 transition"
           >
             Реєстрація
           </router-link>
@@ -41,7 +41,7 @@
           </button>
           <button
               @click="toggleDark"
-              class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              class="p-2 rounded-full hover:bg-lime-300 dark:hover:bg-gray-700 transition"
               :aria-label="isDark ? 'Світла тема' : 'Темна тема'"
           >
             <span v-if="!isDark">🌙</span>
@@ -57,7 +57,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white dark:bg-gray-800">
+    <footer class="bg-green-600 dark:bg-gray-800">
       <div class="container mx-auto px-6 text-center py-4 text-sm">
         &copy; {{ new Date().getFullYear() }} MiniGames Hub. Всі права захищені.
       </div>

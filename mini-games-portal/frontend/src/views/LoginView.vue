@@ -1,25 +1,25 @@
 <template>
   <div
       class="flex items-center justify-center min-h-screen
-           bg-gradient-to-br from-primary-light to-primary-dark
-           dark:from-gray-800 dark:to-gray-900
+           bg-green-600
+           dark:bg-gray-800
            px-4
            rounded-3xl"
   >
     <div
         class="w-full max-w-md
-             bg-white dark:bg-gray-800
+             bg-green-400 dark:bg-gray-900
              p-8
              rounded-3xl
              shadow-lg
              transition-colors"
     >
       <LoginForm @login="onLogin" />
-      <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+      <p class="mt-4 text-center text-sm text-green-600 dark:text-gray-400">
         Ще немає акаунту?
         <router-link
             to="/register"
-            class="text-primary hover:underline dark:text-primary-light"
+            class="text-green-900 hover:underline dark:text-primary-light"
         >
           Зареєструватися
         </router-link>

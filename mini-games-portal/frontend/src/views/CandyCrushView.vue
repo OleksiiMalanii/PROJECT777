@@ -1,7 +1,7 @@
 <template>
   <div
-      class="mx-auto my-4 p-2 bg-gray-100 dark:bg-gray-800
-           border-4 border-primary dark:border-primary-light
+      class="mx-auto my-4 p-2 bg-green-600 dark:bg-gray-800
+           border-4 border-green-800 dark:border-primary-light
            rounded-2xl w-[380px] overflow-hidden"
       style="width: 380px; height: 363px;"
   >
@@ -15,13 +15,13 @@
   <div class="text-center mt-4">
     <button
         @click="endGame"
-        class="px-6 py-2 bg-primary text-white rounded-2xl hover:bg-primary-dark transition"
+        class="px-6 py-2 bg-green-600 dark:bg-primary text-green-400 dark:text-white rounded-2xl hover:bg-green-800 hover:dark:bg-primary-dark transition"
     >
       Завершити гру та зберегти
     </button>
   </div>
 
-  <div class="text-center mt-2 mb-8 text-lg text-gray-800 dark:text-gray-200">
+  <div class="text-center mt-2 mb-8 text-lg text-green-800 dark:text-gray-200">
     Score: {{ score }}
   </div>
 </template>

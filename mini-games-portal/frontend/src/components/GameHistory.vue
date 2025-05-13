@@ -3,13 +3,13 @@
     <li
         v-for="(rec, idx) in records"
         :key="idx"
-        class="flex justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg"
+        class="flex justify-between p-2 bg-green-400 dark:bg-gray-700 rounded-lg"
     >
       <div class="flex space-x-2">
         <span class="font-medium">{{ rec.game }}</span>
-        <span v-if="showScore" class="text-primary">({{ rec.score }} pts)</span>
+        <span v-if="showScore" class="text-lime-700 dark:text-primary">({{ rec.score }} pts)</span>
       </div>
-      <span class="text-gray-500 dark:text-gray-400 text-sm">{{ rec.date }}</span>
+      <span class="text-green-900 dark:text-gray-400 text-sm">{{ rec.date }}</span>
     </li>
   </ul>
 </template>
