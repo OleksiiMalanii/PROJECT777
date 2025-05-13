@@ -8,7 +8,12 @@
 
     <header class="bg-green-600 dark:bg-gray-800 shadow-md">
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-green-900 dark:text-white">Tap&Play</h1>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-3xl font-bold text-green-900 dark:text-white">Tap&Play</h1>
+          <img src="/src/assets/logo1.png" alt="Logo" class="h-12" />
+        </div>
+
+        <!-- Navigation -->
         <nav class="flex items-center space-x-4">
           <router-link to="/" class="hover:text-green-400 hover:dark:text-gray-600 transition">Головна</router-link>
           <router-link
@@ -21,14 +26,14 @@
           <router-link
               v-if="!userStore.username"
               to="/login"
-              class="hover:hover:text-green-400 hover:dark:text-gray-600 transition"
+              class="hover:text-green-400 hover:dark:text-gray-600 transition"
           >
             Увійти
           </router-link>
           <router-link
               v-if="!userStore.username"
               to="/register"
-              class="hover:hover:text-green-400 hover:dark:text-gray-600 transition"
+              class="hover:text-green-400 hover:dark:text-gray-600 transition"
           >
             Реєстрація
           </router-link>
