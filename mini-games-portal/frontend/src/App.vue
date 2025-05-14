@@ -10,7 +10,7 @@
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
         <div class="flex items-center space-x-4">
           <h1 class="text-3xl font-bold text-green-900 dark:text-white">Tap&Play</h1>
-          <img src="/src/assets/logo1.png" alt="Logo" class="h-14" />
+          <img src="@/assets/logo1.png" alt="Logo" class="h-14" />
         </div>
         <nav class="flex items-center space-x-4">
           <router-link to="/" class="hover:text-green-400 hover:dark:text-gray-600 transition">Головна</router-link>
