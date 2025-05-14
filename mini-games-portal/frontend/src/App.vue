@@ -8,7 +8,10 @@
 
     <header class="bg-green-600 dark:bg-gray-800 shadow-md">
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-green-900 dark:text-white">Tap&Play</h1>
+        <div class="flex items-center space-x-4">
+          <h1 class="text-3xl font-bold text-green-900 dark:text-white">Tap&Play</h1>
+          <img src="/src/assets/logo1.png" alt="Logo" class="h-14" />
+        </div>
         <nav class="flex items-center space-x-4">
           <router-link to="/" class="hover:text-green-400 hover:dark:text-gray-600 transition">Головна</router-link>
           <router-link
@@ -35,7 +38,7 @@
           <button
               v-if="userStore.username"
               @click="logout"
-              class="hover:text-red-500 transition font-medium"
+              class="text-red-700 dark:text-red-500 hover:text-pink-950 hover:dark:text-red-700 transition font-medium"
           >
             Вийти
           </button>

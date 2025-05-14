@@ -1,4 +1,8 @@
 <template>
+  <div class="text-center mt-2 mb-4 text-lg text-green-800 dark:text-gray-200">
+    <h1 class="text-3xl font-bold mb-1">Candy Crush</h1>
+    Score: {{ score }}
+  </div>
   <div
       class="mx-auto my-4 p-2 bg-green-600 dark:bg-gray-800
            border-4 border-green-800 dark:border-primary-light
@@ -15,14 +19,10 @@
   <div class="text-center mt-4">
     <button
         @click="endGame"
-        class="px-6 py-2 bg-green-600 dark:bg-primary text-green-400 dark:text-white rounded-2xl hover:bg-green-800 hover:dark:bg-primary-dark transition"
+        class="px-6 py-2 bg-green-600 dark:bg-primary text-green-200 dark:text-white rounded-2xl hover:bg-green-800 hover:dark:bg-primary-dark transition"
     >
       Завершити гру та зберегти
     </button>
-  </div>
-
-  <div class="text-center mt-2 mb-8 text-lg text-green-800 dark:text-gray-200">
-    Score: {{ score }}
   </div>
 </template>
 
@@ -141,7 +141,7 @@ function generateCandy(){for(let c=0;c<columns;c++)if(board[0][c].src.includes('
 
 function crushCandy(){crushThree()}
 
-function endGame(){userStore.addGameToHistory('Candy Crush',score.value);router.push('/history')}
+function endGame(){userStore.addGameToHistory('Candy Crush',score.value);router.push('/')}
 
 onMounted(()=>{startGame();setInterval(()=>{crushCandy();slideCandy();generateCandy()},100)})
 </script>

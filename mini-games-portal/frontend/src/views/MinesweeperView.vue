@@ -1,5 +1,6 @@
 <template>
-  <div class="text-green-700 dark:text-white text-center font-bold text-xl mb-2">
+  <div class="text-green-700 dark:text-white text-center text-xl mt-2 mb-1">
+    <h1 class="text-3xl font-bold mb-1">Minesweeper</h1>
     Таймер: {{ formattedTime }}
   </div>
   <div
@@ -36,8 +37,10 @@
       </div>
     </div>
   </div>
-
   <div class="text-center mt-4 flex justify-center gap-4">
+    <p class="text-red-600 font-semibold mb-4">{{gameOver}}</p>
+  </div>
+  <div class="text-center flex justify-center gap-4">
     <button
         @click="resetGame"
         class="px-6 py-2 bg-green-600 dark:bg-primary text-green-200 rounded-2xl dark:text-white hover:bg-green-800 transition hover:dark:bg-primary-dark"
@@ -86,6 +89,7 @@ const grid = ref([])
 const playing = ref(true)
 const firstClick = ref(true)
 const wifemode = ref(false)
+const gameOver = ref("")
 
 class Square {
   constructor(x, y) {
@@ -200,9 +204,11 @@ function handleTileClick(x, y) {
     grid.value[x][y].isExplodedMine = true
     revealAllMines()
     playing.value = false
+    gameOver.value = "Неправильно! Гру завершено."
     stopTimer() // 💥 Stop timer
   } else if (checkWin()) {
     playing.value = false
+    gameOver.value = "Вітаю! Ви перемогли."
     stopTimer() // 🎉 Stop timer
   }
 }
@@ -248,6 +254,7 @@ function checkWin() {
 
 function resetGame() {
   stopTimer()
+  gameOver.value = ""
   timer.value = 0
   playing.value = true
   firstClick.value = true
