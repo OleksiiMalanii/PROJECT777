@@ -1,22 +1,34 @@
 <template>
-  <ul class="space-y-2">
+  <ul
+      class="bg-background dark:bg-gray-700 rounded-lg overflow-hidden
+           divide-y divide-primary-dark dark:divide-gray-600"
+  >
     <li
         v-for="(rec, idx) in records"
         :key="idx"
-        class="flex justify-between p-2 bg-green-400 dark:bg-gray-700 rounded-lg"
+        class="flex justify-between px-4 py-3"
     >
       <div class="flex space-x-2">
-        <span class="font-medium">{{ rec.game }}</span>
-        <span v-if="showScore" class="text-lime-700 dark:text-primary">({{ rec.score }} pts)</span>
+        <span class="font-medium text-primary-dark dark:text-white">
+          {{ rec.game }}
+        </span>
+        <span
+            v-if="showScore"
+            class="text-primary-dark dark:text-primary"
+        >
+          ({{ rec.score }} pts)
+        </span>
       </div>
-      <span class="text-green-900 dark:text-gray-400 text-sm">{{ rec.date }}</span>
+      <span class="text-sm text-primary-dark dark:text-gray-400">
+        {{ rec.date }}
+      </span>
     </li>
   </ul>
 </template>
 
 <script setup>
 const props = defineProps({
-  records: { type: Array, default: () => [] },
+  records:   { type: Array,   default: () => [] },
   showScore: { type: Boolean, default: false }
 })
 </script>

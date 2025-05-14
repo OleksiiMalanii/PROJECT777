@@ -1,12 +1,10 @@
 <template>
-  <div class="text-center mt-2 mb-4 text-lg text-green-800 dark:text-gray-200">
+  <div class="text-center mt-2 mb-4 text-lg text-primary-dark dark:text-gray-200">
     <h1 class="text-3xl font-bold mb-1">Candy Crush</h1>
     Score: {{ score }}
   </div>
   <div
-      class="mx-auto my-4 p-2 bg-green-600 dark:bg-gray-800
-           border-4 border-green-800 dark:border-primary-light
-           rounded-2xl w-[380px] overflow-hidden"
+      class="mx-auto my-4 p-2 bg-primary dark:bg-gray-800 border-4 border-primary-dark rounded-2xl w-[380px] overflow-hidden"
       style="width: 380px; height: 363px;"
   >
     <div
@@ -19,7 +17,7 @@
   <div class="text-center mt-4">
     <button
         @click="endGame"
-        class="px-6 py-2 bg-green-600 dark:bg-primary text-green-200 dark:text-white rounded-2xl hover:bg-green-800 hover:dark:bg-primary-dark transition"
+        class="px-6 py-2 bg-primary dark:bg-primary text-primary-light dark:text-white rounded-2xl hover:bg-primary-dark hover:dark:bg-primary transition"
     >
       Завершити гру та зберегти
     </button>
@@ -101,7 +99,6 @@ function animateSwap() {
 }
 
 function crushThree() {
-  // Рядки з анімацією зникнення
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns - 2; c++) {
       const [t1, t2, t3] = [board[r][c], board[r][c+1], board[r][c+2]]
@@ -117,7 +114,6 @@ function crushThree() {
       }
     }
   }
-  // Стовпці з анімацією зникнення
   for (let c = 0; c < columns; c++) {
     for (let r = 0; r < rows - 2; r++) {
       const [t1, t2, t3] = [board[r][c], board[r+1][c], board[r+2][c]]

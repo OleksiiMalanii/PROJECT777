@@ -184,7 +184,7 @@ function revealTile(x, y) {
 function handleTileClick(x, y) {
   if (!playing.value) return
   const tile = grid.value[x][y]
-  if (tile.isFlagged) return  // Prevent activating flagged tile
+  if (tile.isFlagged) return
 
   firstButton.value = "Заново"
   if (firstClick.value) {
@@ -195,7 +195,7 @@ function handleTileClick(x, y) {
 
     countNeighborMines()
     firstClick.value = false
-    startTimer() // 🕒 Start timer
+    startTimer()
   }
 
   revealTile(x, y)
