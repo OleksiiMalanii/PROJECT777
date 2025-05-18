@@ -22,8 +22,11 @@
             <div class="bg-background dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-80 text-center space-y-4">
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Game Over</h2>
                 <p class="text-gray-600 dark:text-gray-300">The board is full.</p>
-                <button @click="startGame" class="mt-2 px-6 py-2 bg-primary-dark text-white rounded-xl hover:brightness-110 transition transform hover:scale-105 dark:bg-gray-700 dark:hover:brightness-125">
+                <button @click="startGame" class="mt-2 mr-2 px-6 py-2 bg-primary-dark text-white rounded-xl hover:brightness-110 transition transform hover:scale-105 dark:bg-gray-700 dark:hover:brightness-125">
                     Restart
+                </button>
+                <button @click="goHome" class="mt-2 px-6 py-2 bg-gray-500 text-white rounded-xl hover:brightness-110 transition transform hover:scale-105 dark:bg-gray-600 dark:hover:brightness-125">
+                    Home
                 </button>
             </div>
         </div>
@@ -32,6 +35,11 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
+
+const router = useRouter()
+const userStore = useUserStore()
 
 const canvas = ref(null)
 const ctx = ref(null)
@@ -50,7 +58,7 @@ let lastTime = 0
 let animationFrameId = null
 const isGameOver = ref(false)
 const showGameOver = ref(false)
-
+const gameSaved = ref(false)
 
 const colors = [
     null, 'cyan', 'yellow', 'purple', 'green', 'red', 'blue', 'orange',
@@ -153,6 +161,11 @@ function playerDrop() {
             cancelAnimationFrame(animationFrameId)
             animationFrameId = null
             showGameOver.value = true
+
+                if (!gameSaved.value) {
+        userStore.addGameToHistory('Tetris', score.value)
+        gameSaved.value = true
+    }   
             return
         }
 
@@ -177,6 +190,11 @@ function playerReset() {
         cancelAnimationFrame(animationFrameId)
         animationFrameId = null
         showGameOver.value = true
+
+        if (!gameSaved.value) {
+        userStore.addGameToHistory('Tetris', score.value)
+        gameSaved.value = true
+    }
         return
     }
 }
@@ -189,7 +207,7 @@ function clearLines() {
         }
         const row = grid.splice(y, 1)[0].fill(0)
         grid.unshift(row)
-        ++score.value
+        score.value += 10
         ++y
     }
 }
@@ -206,15 +224,14 @@ function update(time = 0) {
     animationFrameId = requestAnimationFrame(update)
 }
 
-function endGame() {
-    isGameOver.value = true
-    cancelAnimationFrame(animationFrameId)
-    animationFrameId = null
-}
-
 function startGame() {
+    if (isGameOver.value && !gameSaved.value && score.value != null) {
+        userStore.addGameToHistory('Tetris', score.value)
+        gameSaved.value = true
+    }
     showGameOver.value = false
     isGameOver.value = false
+    gameSaved.value = false
     grid = createMatrix(COLS, ROWS)
     score.value = 0
 
@@ -262,4 +279,13 @@ onMounted(() => {
     ctx.value = canvas.value.getContext('2d')
     document.addEventListener('keydown', handleKey)
 })
+
+function goHome() {
+    if (!gameSaved.value) {
+        userStore.addGameToHistory('Tetris', score.value)
+        gameSaved.value = true
+    }
+    router.push('/')
+}
+
 </script>
