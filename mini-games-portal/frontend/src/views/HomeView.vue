@@ -68,7 +68,8 @@ const games = ref([
   { name: 'WhackAMole', title: 'Whack A Mole', img: '/src/assets/whatamole.png', tags: 'Reaction, Fun', best: false },
   { name: 'Minesweeper', title: 'Minesweeper', img: '/src/assets/minesweeper.webp', tags: 'Logic', best: true },
   { name: 'PatternRepeat', title: 'Repeat The Pattern', img: '/src/assets/da.webp', tags: 'Memory', best: false },
-  { name: 'CandyCrush', title: 'Candy Crush', img: '/src/assets/candycrush.png', tags: 'Fun', best: true }
+  { name: 'CandyCrush', title: 'Candy Crush', img: '/src/assets/candycrush.png', tags: 'Fun', best: true },
+  { name: 'Tetris', title: 'Tetris', img: 'src/assets/tetris.png', tags: 'Logic', best: true}
 ])
 
 const filteredGames = computed(() =>
@@ -90,6 +91,8 @@ function startGame(game) {
     router.push({ name: 'minesweeper' })
   } else if (game.name === 'WhackAMole') {
     router.push({ name: 'whackamole' })
+  } else if (game.name === 'Tetris') {
+    router.push({ name: 'tetris' })
   } else if (game.name === 'PatternRepeat') {
     router.push({ name: 'patternrepeat' })
   } else {

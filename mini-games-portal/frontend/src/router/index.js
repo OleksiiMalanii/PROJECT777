@@ -9,6 +9,7 @@ import CandyCrushView from '@/views/CandyCrushView.vue'
 import MinesweeperView from "@/views/MinesweeperView.vue";
 import WhackAMole from "@/views/WhackAMole.vue";
 import PatternRepeat from "@/views/PatternRepeat.vue";
+import TetrisView from '@/views/TetrisView.vue'
 
 const routes = [
     { path: '/',            name: 'home',       component: HomeView },
@@ -19,6 +20,7 @@ const routes = [
     { path: '/candycrush',  name: 'candycrush', component: CandyCrushView, meta: { requiresAuth: true } },
     { path: '/minesweeper',  name: 'minesweeper', component: MinesweeperView, meta: { requiresAuth: true } },
     { path: '/whackamole',  name: 'whackamole', component: WhackAMole, meta: { requiresAuth: true } },
+    { path: '/tetris',  name: 'tetris', component: TetrisView, meta: { requiresAuth: true } },
     { path: '/patternrepeat',  name: 'patternrepeat', component: PatternRepeat, meta: { requiresAuth: true } }
 ]
 
