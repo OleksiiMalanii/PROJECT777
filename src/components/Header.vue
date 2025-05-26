@@ -1,6 +1,6 @@
 <template>
-  <header class="fixed top-5 left-8 right-5 z-50 flex justify-between items-center px-5 py-4 text-white font-sci-fi">
-    <h1 class="text-3xl font-bold tracking-wide">Tap&Play</h1>
+  <header class="fixed top-5 left-8 right-5 z-50 flex justify-between items-center px-5 py-4 text-white sci-fi-font">
+    <router-link to="/" class="text-3xl font-bold tracking-wide">Tap&Play</router-link>
 
     <!-- Profile Dropdown or Sign In -->
     <div v-if="user" class="relative" v-click-outside="handleClickOutside">
@@ -95,9 +95,6 @@ const handleClickOutside = () => {
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,700,1,200');
 
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .unselectable {
   user-select: none;
 }

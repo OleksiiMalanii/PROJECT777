@@ -1,5 +1,7 @@
 <template>
   <section class="pt-28 pb-20 pl-20 pr-6 md:pl-32 md:pr-12 text-white font-sci-fi">
+    <h1 class="text-4xl font-bold text-center mb-4">GAMES</h1>
+    <div class="h-1 w-33 bg-white mx-auto mb-10 rounded-full"></div>
     <!-- Search & Filter -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
       <input
@@ -100,9 +102,6 @@ const regularGames = computed(() => filteredGames.value.filter(game => !game.bes
 </script>
 
 <style scoped>
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .unselectable {
   user-select: none;
 }

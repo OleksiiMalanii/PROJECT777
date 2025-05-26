@@ -1,11 +1,12 @@
 <template>
   <section class="pt-28 pb-20 pl-20 pr-6 md:pl-32 md:pr-12 text-white min-h-screen font-sci-fi">
-  <h1 class="text-4xl font-bold mb-6">My Badges</h1>
+    <h1 class="text-4xl font-bold text-center mb-4">BADGES</h1>
+    <div class="h-1 w-37 bg-white mx-auto mb-10 rounded-full"></div>
 
-    <div v-if="loading" class="text-gray-300">Loading badges...</div>
+    <div v-if="loading" class="text-gray-300 text-2xl">Loading...</div>
     <div v-else>
       <div v-for="(gameBadges, gameId) in userBadges" :key="gameId" class="mb-8">
-        <h2 class="text-2xl font-semibold mb-4 capitalize">{{ gameId }}</h2>
+        <h2 class="text-2xl mb-4 capitalize">{{ gameId }}</h2>
         <div class="flex gap-4 flex-wrap">
           <div
               v-for="badge in gameBadges"
@@ -70,9 +71,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .unselectable {
   user-select: none;
 }

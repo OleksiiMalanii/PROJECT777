@@ -36,9 +36,6 @@
 </template>
 
 <style scoped>
-.sci-fi-font {
-  font-family: 'Orbitron', sans-serif;
-}
 .unselectable {
   user-select: none;
 }

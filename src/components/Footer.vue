@@ -27,7 +27,4 @@
 <script setup></script>
 
 <style scoped>
-.sci-fi-font {
-  font-family: 'Orbitron', sans-serif;
-}
 </style>

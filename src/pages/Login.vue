@@ -102,12 +102,8 @@ const submit = async () => {
 </script>
 
 <style scoped>
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .unselectable {
   user-select: none;
-  -webkit-user-drag: none;
 }
 .material-symbols-outlined {
   font-variation-settings:

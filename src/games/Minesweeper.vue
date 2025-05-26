@@ -1,5 +1,5 @@
 <template>
-  <section class="flex h-screen bg-gradient-to-t from-gray-900 to-indigo-950 text-white font-sci-fi overflow-hidden">
+  <section class="flex h-screen bg-gradient-to-t from-gray-900 to-indigo-950 text-white sci-fi-font overflow-hidden">
     <!-- Game Field Left -->
     <div class="flex flex-col justify-center items-center flex-grow p-4">
       <p class="text-lg mb-1">Timer: {{ formattedTime }}</p>
@@ -89,6 +89,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 //import { useUserStore } from '/stores/userStore'
 import { giveBadge } from '/src/utils/badgeUtils';
+import { saveRecord } from '/src/utils/records.js' // adjust path if needed
 
 import { getAuth } from "firebase/auth"
 
@@ -103,7 +104,7 @@ const timerInterval = ref(null)
 const difficulty_presets = {
   easy: { rows: 9, cols: 9, mines: 9 },
   mid: { rows: 9, cols: 18, mines: 20 },
-  hard: { rows: 11, cols: 19, mines: 35 }
+  hard: { rows: 11, cols: 19, mines: 40 }
 }
 
 const difficulty = ref(difficulty_presets.mid)
@@ -185,6 +186,19 @@ function countNeighborMines() {
   }
 }
 
+function getDifficultyLabel() {
+  switch (difficulty.value.mines) {
+    case 9:
+      return 'easy'
+    case 20:
+      return 'medium'
+    case 40:
+      return 'hard'
+    default:
+      return 'custom'
+  }
+}
+
 function handleTileClick(x, y) {
   if (!playing.value || grid.value[x][y].isFlagged) return
 
@@ -216,30 +230,20 @@ function handleTileClick(x, y) {
     const auth = getAuth();
     const user = auth.currentUser;
     if (user) {
-      checkAndAwardBadges(user.uid, difficulty.value, timer.value);
+      checkAndAwardBadges(user.uid, getDifficultyLabel(), timer.value);
+
+      saveRecord("minesweeper", timer.value, getDifficultyLabel(), false)
     }
   }
 }
 
 async function checkAndAwardBadges(userId, difficulty, timeElapsed) {
   try {
-    // Check for medium difficulty + fast win
-    const isMedium =
-        difficulty.rows === difficulty_presets.mid.rows &&
-        difficulty.cols === difficulty_presets.mid.cols &&
-        difficulty.mines === difficulty_presets.mid.mines;
-
-    if (isMedium && timeElapsed < 40) {
+    if (difficulty === "medium" && timeElapsed < 40) {
       await giveBadge(userId, 'minesweeper', 'fasthead');
     }
 
-    // Check for hard difficulty
-    const isHard =
-        difficulty.rows === difficulty_presets.hard.rows &&
-        difficulty.cols === difficulty_presets.hard.cols &&
-        difficulty.mines === difficulty_presets.hard.mines;
-
-    if (isHard) {
+    if (difficulty === "hard") {
       await giveBadge(userId, 'minesweeper', 'survivor');
     }
   } catch (error) {
@@ -333,9 +337,6 @@ createGrid()
 </script>
 
 <style scoped>
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .tile {
   width: 40px;
   height: 40px;

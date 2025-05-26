@@ -107,9 +107,6 @@ const saveUsername = async () => {
 @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,700,1,200');
 
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .unselectable {
   user-select: none;
 }

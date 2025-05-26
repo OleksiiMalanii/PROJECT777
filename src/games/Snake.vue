@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen font-sci-fi text-white">
+  <div class="flex h-screen sci-fi-font text-white">
     <!-- Left: Game Area -->
     <div class="flex flex-col items-center justify-center flex-1">
       <div class="text-lg mb-1">Score: {{ score }}</div>

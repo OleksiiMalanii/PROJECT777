@@ -36,10 +36,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-//import { useUserStore } from '@/stores/userStore'
+import {saveRecord} from "/src/utils/records.js";
 
 const router = useRouter()
-//const userStore = useUserStore()
 const score = ref(0)
 
 const candies = ['Blue', 'Orange', 'Green', 'Yellow', 'Red', 'Purple']
@@ -171,7 +170,7 @@ function generateCandy() {
 }
 
 function endGame() {
-  //userStore.addGameToHistory('Candy Crush', score.value)
+  saveRecord("candycrush", score.value, null, true)
   router.push('/games')
 }
 
@@ -186,9 +185,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .tile {
   width: 40px;
   height: 40px;

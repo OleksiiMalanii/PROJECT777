@@ -1,5 +1,5 @@
 <template>
-  <section class="flex h-screen text-white font-sci-fi overflow-hidden bg-gradient-to-t from-gray-900 to-indigo-950">
+  <section class="flex h-screen text-white sci-fi-font overflow-hidden bg-gradient-to-t from-gray-900 to-indigo-950">
     <!-- Game Field Left -->
     <div class="flex flex-col justify-center items-center flex-grow p-4">
       <p class="text-lg mb-1">Score: {{ score }}</p>
@@ -261,7 +261,4 @@ function goHome() {
 </script>
 
 <style scoped>
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 </style>

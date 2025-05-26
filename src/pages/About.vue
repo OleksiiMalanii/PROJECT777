@@ -71,9 +71,6 @@
 </template>
 
 <style scoped>
-.font-sci-fi {
-  font-family: 'Orbitron', sans-serif;
-}
 .material-symbols-outlined {
   font-variation-settings:
       'FILL' 1,
