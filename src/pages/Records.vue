@@ -26,7 +26,20 @@
 
       <div v-if="records.snake">
         <h2 class="text-2xl text-orange-500 mb-2">Snake</h2>
-        <p>Best Score: {{ records.snake }}</p>
+        <ul class="list-disc list-inside space-y-1">
+          <li v-if="records.snake.easy">Easy: {{ records.snake.easy }}</li>
+          <li v-if="records.snake.medium">Medium: {{ records.snake.medium }}</li>
+          <li v-if="records.snake.hard">Hard: {{ records.snake.hard }}</li>
+        </ul>
+      </div>
+
+      <div v-if="records.spaceshooter">
+        <h2 class="text-2xl text-orange-500 mb-2">Space Shooter</h2>
+        <ul class="list-disc list-inside space-y-1">
+          <li v-if="records.spaceshooter.easy">Easy: {{ records.spaceshooter.easy }}</li>
+          <li v-if="records.spaceshooter.medium">Medium: {{ records.spaceshooter.medium }}</li>
+          <li v-if="records.spaceshooter.hard">Hard: {{ records.spaceshooter.hard }}</li>
+        </ul>
       </div>
     </div>
   </section>

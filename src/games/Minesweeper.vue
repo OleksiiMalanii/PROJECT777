@@ -1,5 +1,5 @@
 <template>
-  <section class="flex h-screen bg-gradient-to-t from-gray-900 to-indigo-950 text-white sci-fi-font overflow-hidden">
+  <section class="flex h-screen bg-gradient-to-t from-gray-900 to-indigo-950 text-white font-sci-fi overflow-hidden">
     <!-- Game Field Left -->
     <div class="flex flex-col justify-center items-center flex-grow p-4">
       <p class="text-lg mb-1">Timer: {{ formattedTime }}</p>
@@ -47,19 +47,34 @@
       <div class="flex gap-2">
         <button
             @click="setDifficulty('easy')"
-            class="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 transition"
+            :disabled="isGameRunning && !firstClick"
+            :class="[
+            'px-4 py-2 rounded-full transition',
+            (isGameRunning && !firstClick) ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 cursor-pointer',
+            currentDifficultyName === 'easy' ? 'ring-2 ring-white' : ''
+        ]"
         >
           Easy
         </button>
         <button
-            @click="setDifficulty('mid')"
-            class="px-4 py-2 rounded-full bg-yellow-600 hover:bg-yellow-700 transition"
+            @click="setDifficulty('medium')"
+            :disabled="isGameRunning && !firstClick"
+            :class="[
+            'px-4 py-2 rounded-full transition',
+            (isGameRunning && !firstClick) ? 'bg-gray-500 cursor-not-allowed' : 'bg-yellow-600 hover:bg-yellow-700 cursor-pointer',
+            currentDifficultyName === 'medium' ? 'ring-2 ring-white' : ''
+        ]"
         >
           Medium
         </button>
         <button
             @click="setDifficulty('hard')"
-            class="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 transition"
+            :disabled="isGameRunning && !firstClick"
+            :class="[
+            'px-4 py-2 rounded-full transition',
+            (isGameRunning && !firstClick) ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 cursor-pointer',
+            currentDifficultyName === 'hard' ? 'ring-2 ring-white' : ''
+        ]"
         >
           Hard
         </button>
@@ -69,13 +84,13 @@
       <div class="flex gap-4">
         <button
             @click="resetGame"
-            class="flex-1 px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 transition"
+            class="flex-1 px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 transition cursor-pointer"
         >
           {{ firstButton }}
         </button>
         <button
             @click="exitGame"
-            class="flex-1 px-4 py-2 rounded-full bg-red-500 hover:bg-red-700 transition"
+            class="flex-1 px-4 py-2 rounded-full bg-red-500 hover:bg-red-800 transition cursor-pointer  "
         >
           Close
         </button>
@@ -87,14 +102,13 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-//import { useUserStore } from '/stores/userStore'
+
 import { giveBadge } from '/src/utils/badgeUtils';
-import { saveRecord } from '/src/utils/records.js' // adjust path if needed
+import { saveRecord } from '/src/utils/records.js'
 
 import { getAuth } from "firebase/auth"
 
 const router = useRouter()
-//const userStore = useUserStore()
 
 const tileSize = 40
 const gapSize = 3
@@ -103,13 +117,13 @@ const timerInterval = ref(null)
 
 const difficulty_presets = {
   easy: { rows: 9, cols: 9, mines: 9 },
-  mid: { rows: 9, cols: 18, mines: 20 },
+  medium: { rows: 9, cols: 18, mines: 20 },
   hard: { rows: 11, cols: 19, mines: 40 }
 }
 
-const difficulty = ref(difficulty_presets.mid)
+const difficulty = ref(difficulty_presets.medium)
 const grid = ref([])
-const playing = ref(true)
+const isGameRunning = ref(true)
 const firstClick = ref(true)
 const wifemode = ref(false)
 const gameOver = ref("")
@@ -119,6 +133,19 @@ const formattedTime = computed(() => {
   const minutes = Math.floor(timer.value / 60)
   const seconds = timer.value % 60
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+})
+
+// Computed property для визначення поточної складності
+const currentDifficultyName = computed(() => {
+  const current = difficulty.value
+  for (const [name, preset] of Object.entries(difficulty_presets)) {
+    if (preset.rows === current.rows &&
+        preset.cols === current.cols &&
+        preset.mines === current.mines) {
+      return name
+    }
+  }
+  return 'custom'
 })
 
 class Square {
@@ -200,7 +227,7 @@ function getDifficultyLabel() {
 }
 
 function handleTileClick(x, y) {
-  if (!playing.value || grid.value[x][y].isFlagged) return
+  if (!isGameRunning.value || grid.value[x][y].isFlagged) return
 
   firstButton.value = "Restart"
   if (firstClick.value) {
@@ -221,16 +248,16 @@ function handleTileClick(x, y) {
     revealAllMines()
     gameOver.value = "You've lost!"
     stopTimer()
-    playing.value = false
+    isGameRunning.value = false
   } else if (checkWin()) {
     gameOver.value = "Congrats! You've won!"
     stopTimer()
-    playing.value = false
+    isGameRunning.value = false
 
     const auth = getAuth();
     const user = auth.currentUser;
     if (user) {
-      checkAndAwardBadges(user.uid, getDifficultyLabel(), timer.value);
+      checkAndAwardBadges(user.uid, difficulty.value, timer.value);
 
       saveRecord("minesweeper", timer.value, getDifficultyLabel(), false)
     }
@@ -250,7 +277,6 @@ async function checkAndAwardBadges(userId, difficulty, timeElapsed) {
     console.error('Badge check failed:', error);
   }
 }
-
 
 function revealTile(x, y) {
   const tile = grid.value[x][y]
@@ -273,7 +299,7 @@ function revealTile(x, y) {
 }
 
 function toggleFlag(x, y) {
-  if (!playing.value) return
+  if (!isGameRunning.value) return
   const tile = grid.value[x][y]
   if (!tile.isClicked) {
     tile.isFlagged = !tile.isFlagged
@@ -293,7 +319,7 @@ function checkWin() {
 function resetGame() {
   stopTimer()
   gameOver.value = ""
-  playing.value = true
+  isGameRunning.value = true
   firstClick.value = true
   createGrid()
 }
@@ -337,6 +363,9 @@ createGrid()
 </script>
 
 <style scoped>
+.font-sci-fi {
+  font-family: 'Orbitron', sans-serif;
+}
 .tile {
   width: 40px;
   height: 40px;

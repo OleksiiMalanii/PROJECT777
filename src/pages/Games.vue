@@ -72,19 +72,25 @@ const games = [
     img: '/src/assets/Games/Tetris.png',
     tags: ['Reaction', 'Logic'],
     route: '/games/tetris',
-    best: true,
   },
   {
     title: 'Snake',
-    img: '/src/assets/Games/Snake.png',
+    img: '/src/assets/Games/SnakeGame.png',
     tags: ['Reaction', 'Fun'],
     route: '/games/snake',
+    best: true,
   },
   {
     title: 'Candy Crush',
     img: '/src/assets/Games/candycr/CandyCrush.png',
     tags: ['Fun'],
     route: '/games/candycrush',
+  },
+  {
+    title: 'Space Shooter',
+    img: '/src/assets/Games/SpaceShooter.png',
+    tags: ['Reaction', 'Fun'],
+    route: '/games/spaceshooter',
     best: true,
   },
 ]

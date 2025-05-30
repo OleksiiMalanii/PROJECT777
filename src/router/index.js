@@ -13,6 +13,7 @@ import Minesweeper from '/src/games/Minesweeper.vue';
 import CandyCrush from '/src/games/CandyCrush.vue';
 import Tetris from '/src/games/Tetris.vue';
 import Snake from '/src/games/Snake.vue';
+import SpaceShooter from '/src/games/SpaceShooter.vue';
 import { auth } from '/src/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -61,6 +62,7 @@ const routes = [
     { path: '/games/candycrush', component: CandyCrush, beforeEnter: requireAuth },
     { path: '/games/tetris', component: Tetris, beforeEnter: requireAuth },
     { path: '/games/snake', component: Snake, beforeEnter: requireAuth },
+    { path: '/games/spaceshooter', component: SpaceShooter, beforeEnter: requireAuth },
 ];
 
 const router = createRouter({

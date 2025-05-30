@@ -1,5 +1,5 @@
 <template>
-  <section class="flex h-screen text-white sci-fi-font overflow-hidden bg-gradient-to-t from-gray-900 to-indigo-950">
+  <section class="flex h-screen text-white font-sci-fi overflow-hidden bg-gradient-to-t from-gray-900 to-indigo-950">
     <!-- Game Field Left -->
     <div class="flex flex-col justify-center items-center flex-grow p-4">
       <p class="text-lg mb-1">Score: {{ score }}</p>
@@ -43,6 +43,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import {getAuth} from "firebase/auth";
+
+import { giveBadge } from '/src/utils/badgeUtils';
+import { saveRecord } from '/src/utils/records.js'
 
 const router = useRouter()
 
@@ -61,9 +65,16 @@ let dropCounter = 0
 let lastTime = 0
 let animationFrameId = null
 
-const colors = [
-  null, 'cyan', 'yellow', 'purple', 'green', 'red', 'blue', 'orange',
-]
+// Updated color system with multiple shades per color
+const colorShades = {
+  1: ['#00AFFF', '#00CED1', '#00BBBB'], // Cyan
+  2: ['#FFFF00', '#ECEC00', '#CCCC00'], // Yellow
+  3: ['#AA00FF', '#9900E5', '#8800CC'], // Purple
+  4: ['#00FF00', '#00CC00', '#00AF00'], // Green
+  5: ['#AA0000', '#CA0000', '#8A0000'], // Red
+  6: ['#1d1dff', '#1313ff', '#0000CC'], // Blue
+  7: ['#FF9500', '#E59400', '#CC8400'], // Orange !!!!
+};
 
 const SHAPES = {
   I: [[1, 1, 1, 1]],
@@ -89,26 +100,45 @@ function createMatrix(w, h) {
 function createPiece() {
   const types = 'IOTSZJL'
   const type = types[Math.floor(Math.random() * types.length)]
-  const matrix = SHAPES[type]
+  const shape = SHAPES[type]
+
+  // Create shaded matrix with random shades for each block
+  const shadedMatrix = shape.map(row =>
+      row.map(value => value === 0 ? 0 : Math.floor(Math.random() * 3) + 1)
+  )
+
   return {
-    pos: { x: Math.floor(COLS / 2) - Math.ceil(matrix[0].length / 2), y: -matrix.length + 1 },
-    matrix,
+    pos: { x: Math.floor(COLS / 2) - Math.ceil(shape[0].length / 2), y: -shape.length + 1 },
+    matrix: JSON.parse(JSON.stringify(shape)), // Deep copy of the shape
+    shadedMatrix,
     type,
   }
 }
 
-function drawMatrix(matrix, offset) {
+function drawMatrix(matrix, offset, shadedMatrix = null) {
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       const drawY = y + offset.y
       if (value !== 0 && drawY >= 0) {
-        ctx.value.fillStyle = colors[value]
-        ctx.value.fillRect(
-            (x + offset.x) * BLOCK_SIZE,
-            drawY * BLOCK_SIZE,
-            BLOCK_SIZE,
-            BLOCK_SIZE
-        )
+        // Get the shade index (0, 1, or 2)
+        const shadeIndex = shadedMatrix ? shadedMatrix[y][x] - 1 : 0
+        ctx.value.fillStyle = colorShades[value][shadeIndex]
+
+        // Draw the block with a small border
+        const blockX = (x + offset.x) * BLOCK_SIZE
+        const blockY = drawY * BLOCK_SIZE
+
+        // Main block
+        ctx.value.fillRect(blockX, blockY, BLOCK_SIZE, BLOCK_SIZE)
+
+        // Add some highlights for better visual effect
+        ctx.value.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+        ctx.value.lineWidth = 1
+        ctx.value.strokeRect(blockX + 1, blockY + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2)
+
+        // Inner highlight
+        ctx.value.strokeStyle = 'rgba(0, 0, 0, 0.2)'
+        ctx.value.strokeRect(blockX + 2, blockY + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4)
       }
     })
   })
@@ -117,15 +147,40 @@ function drawMatrix(matrix, offset) {
 function draw() {
   ctx.value.fillStyle = '#1c1a49' // Tailwind bg-gray-800
   ctx.value.fillRect(0, 0, canvas.value.width, canvas.value.height)
-  drawMatrix(grid, { x: 0, y: 0 })
-  if (currentPiece) drawMatrix(currentPiece.matrix, currentPiece.pos)
+
+  // Draw grid
+  grid.forEach((row, y) => {
+    row.forEach((cell, x) => {
+      if (cell !== 0) {
+        ctx.value.fillStyle = colorShades[cell.type][cell.shade - 1]
+        const blockX = x * BLOCK_SIZE
+        const blockY = y * BLOCK_SIZE
+        ctx.value.fillRect(blockX, blockY, BLOCK_SIZE, BLOCK_SIZE)
+
+        // Add borders for grid blocks too
+        ctx.value.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+        ctx.value.lineWidth = 1
+        ctx.value.strokeRect(blockX + 1, blockY + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2)
+        ctx.value.strokeStyle = 'rgba(0, 0, 0, 0.2)'
+        ctx.value.strokeRect(blockX + 2, blockY + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4)
+      }
+    })
+  })
+
+  // Draw current piece
+  if (currentPiece) {
+    drawMatrix(currentPiece.matrix, currentPiece.pos, currentPiece.shadedMatrix)
+  }
 }
 
 function merge(grid, piece) {
   piece.matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value !== 0 && y + piece.pos.y >= 0) {
-        grid[y + piece.pos.y][x + piece.pos.x] = value
+        grid[y + piece.pos.y][x + piece.pos.x] = {
+          type: value,
+          shade: piece.shadedMatrix[y][x]
+        }
       }
     })
   })
@@ -135,10 +190,20 @@ function collide(grid, piece) {
   const { matrix, pos } = piece
   for (let y = 0; y < matrix.length; ++y) {
     for (let x = 0; x < matrix[y].length; ++x) {
-      if (
-          matrix[y][x] !== 0 &&
-          (!grid[y + pos.y] || grid[y + pos.y][x + pos.x] !== 0)
-      ) return true
+      if (matrix[y][x] !== 0) {
+        const gridY = y + pos.y
+        const gridX = x + pos.x
+
+        if (
+            gridY < 0 || // Above the grid is allowed
+            gridY >= ROWS || // Below the grid
+            gridX < 0 || // Left of the grid
+            gridX >= COLS || // Right of the grid
+            (gridY >= 0 && grid[gridY][gridX] !== 0) // Occupied cell
+        ) {
+          return true
+        }
+      }
     }
   }
   return false
@@ -179,10 +244,10 @@ function clearLines() {
     for (let x = 0; x < COLS; ++x) {
       if (grid[y][x] === 0) continue outer
     }
-    const row = grid.splice(y, 1)[0].fill(0)
-    grid.unshift(row)
+    const row = grid.splice(y, 1)[0]
+    grid.unshift(new Array(COLS).fill(0))
     score.value += 10
-    ++y
+    ++y // Check the same row again as we moved everything down
   }
 }
 
@@ -210,9 +275,12 @@ function startGame() {
 }
 
 function stopGame() {
+  checkRecord()
   isRunning.value = false
-  cancelAnimationFrame(animationFrameId)
-  animationFrameId = null
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId)
+    animationFrameId = null
+  }
 }
 
 function toggleGame() {
@@ -220,6 +288,14 @@ function toggleGame() {
     stopGame()
   } else {
     startGame()
+  }
+}
+
+const checkRecord = () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+    saveRecord("tetris", score.value, null, true)
   }
 }
 
@@ -231,27 +307,54 @@ function move(dir) {
 }
 
 function rotate(matrix) {
-  return matrix[0].map((_, i) => matrix.map(row => row[i])).reverse()
+  const N = matrix.length
+  const result = new Array(matrix[0].length).fill(0).map(() => new Array(N).fill(0))
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < matrix[i].length; j++) {
+      result[j][N - 1 - i] = matrix[i][j]
+    }
+  }
+  return result
 }
 
 function playerRotate() {
-  const original = currentPiece.matrix
-  const rotated = rotate(currentPiece.matrix)
-  currentPiece.matrix = rotated
+  const originalMatrix = currentPiece.matrix
+  const originalShaded = currentPiece.shadedMatrix
+
+  // Rotate both matrices
+  currentPiece.matrix = rotate(currentPiece.matrix)
+  currentPiece.shadedMatrix = rotate(currentPiece.shadedMatrix)
+
   if (collide(grid, currentPiece)) {
-    currentPiece.matrix = original
+    // Revert if collision
+    currentPiece.matrix = originalMatrix
+    currentPiece.shadedMatrix = originalShaded
   }
 }
 
 function handleKey(e) {
-  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "W", "s", "S",
+    "a", "A", "d", "D", "ц", "Ц", "і", "І", "ф", "Ф", "в", "В"].includes(e.key)) {
     e.preventDefault()
   }
+
   if (!isRunning.value || !currentPiece) return
-  if (e.key === 'ArrowLeft') move(-1)
-  if (e.key === 'ArrowRight') move(1)
-  if (e.key === 'ArrowDown') playerDrop()
-  if (e.key === 'ArrowUp') playerRotate()
+
+  if (["ArrowLeft", "a", "A", "ф", "Ф"].includes(e.key)) {
+    move(-1)
+  }
+
+  if (["ArrowRight", "d", "D", "в", "В"].includes(e.key)) {
+    move(1)
+  }
+
+  if (["ArrowDown", "s", "S", "і", "І"].includes(e.key)) {
+    playerDrop()
+  }
+
+  if (["ArrowUp", "w", "W", "ц", "Ц"].includes(e.key)) {
+    playerRotate()
+  }
 }
 
 function goHome() {
@@ -261,4 +364,7 @@ function goHome() {
 </script>
 
 <style scoped>
+.font-sci-fi {
+  font-family: 'Orbitron', sans-serif;
+}
 </style>
