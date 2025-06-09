@@ -1,103 +1,106 @@
 <template>
-  <section class="pt-20 pb-32 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 2xl:px-32 text-white font-sci-fi">
-    <!-- Title -->
-    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4">FORUM</h1>
-    <div class="h-1 w-24 sm:w-32 md:w-36 bg-white mx-auto mb-6 sm:mb-8 md:mb-10 rounded-full"></div>
+  <div class="pl-16 md:pl-20">
+    <section class="pt-20 pb-32 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 2xl:px-32 text-white font-sci-fi">
+      <!-- Title -->
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4">FORUM</h1>
+      <div class="h-1 w-24 sm:w-32 md:w-36 bg-white mx-auto mb-6 sm:mb-8 md:mb-10 rounded-full"></div>
 
-    <!-- No Posts Message -->
-    <div v-if="posts.length === 0" class="text-center py-8 sm:py-12 md:py-16">
-      <div class="text-orange-500 text-3xl sm:text-4xl md:text-5xl mb-4">
-        <span class="material-symbols-outlined">forum</span>
+      <!-- No Posts Message -->
+      <div v-if="posts.length === 0" class="text-center py-8 sm:py-12 md:py-16">
+        <div class="text-orange-500 text-3xl sm:text-4xl md:text-5xl mb-4">
+          <span class="material-symbols-outlined">forum</span>
+        </div>
+        <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-2">No Posts Yet</h3>
+        <p class="text-gray-400 max-w-md mx-auto text-sm sm:text-base px-4">Be the first to share your thoughts!</p>
       </div>
-      <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-2">No Posts Yet</h3>
-      <p class="text-gray-400 max-w-md mx-auto text-sm sm:text-base px-4">Be the first to share your thoughts!</p>
-    </div>
 
-    <!-- Forum Posts -->
-    <div v-else class="mb-16 space-y-4 sm:space-y-6 md:space-y-8">
-      <!-- Post Item -->
-      <div v-for="post in posts" :key="post.id" class="bg-gray-800 bg-opacity-50 rounded-lg p-4 sm:p-5 md:p-6 shadow-lg">
-        <div class="flex items-start space-x-3 sm:space-x-4">
-          <!-- User Avatar -->
-          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-orange-500 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-orange-500 text-lg sm:text-xl unselectable">person</span>
-          </div>
-
-          <div class="flex-1 min-w-0">
-            <div class="flex items-start justify-between mb-2">
-              <div class="flex-1 min-w-0">
-                <p class="text-orange-500 font-bold text-sm sm:text-base truncate">{{ post.author }}</p>
-                <p class="text-gray-400 text-xs sm:text-sm">{{ formatDate(post.timestamp) }}</p>
-              </div>
-              <button v-if="currentUser?.uid === post.userId" @click="deletePost(post.id)"
-                      class="text-gray-400 hover:text-orange-500 transition ml-2 flex-shrink-0">
-                <span class="material-symbols-outlined text-lg sm:text-xl">delete</span>
-              </button>
+      <!-- Forum Posts -->
+      <div v-else class="mb-16 space-y-4 sm:space-y-6 md:space-y-8">
+        <!-- Post Item -->
+        <div v-for="post in posts" :key="post.id" class="bg-gray-800 bg-opacity-50 rounded-lg p-4 sm:p-5 md:p-6 shadow-lg">
+          <div class="flex items-start space-x-3 sm:space-x-4">
+            <!-- User Avatar -->
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-orange-500 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-orange-500 text-lg sm:text-xl unselectable">person</span>
             </div>
-            <p class="text-white mb-3 sm:mb-4 text-sm sm:text-base break-words">{{ post.content }}</p>
 
-            <!-- Comments Section -->
-            <div class="mt-3 sm:mt-4 border-t border-gray-700 pt-3 sm:pt-4">
-              <div v-for="comment in post.comments" :key="comment.id"
-                class="bg-gray-700 bg-opacity-50 rounded-lg p-3">
-                <div class="flex items-start">
-                  <div class="w-8 h-8 rounded-full border border-orange-500 flex items-center justify-center mr-3">
-                    <span class="material-symbols-outlined text-orange-500 text-sm unselectable">person</span>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between mb-1">
-                      <p class="text-orange-400 text-sm font-medium">{{ comment.author }}</p>
-                      <div class="flex items-center gap-2">
-                        <p class="text-gray-400 text-xs">{{ formatDate(comment.timestamp) }}</p>
-                        <button v-if="currentUser?.uid === comment.userId"
-                          @click="deleteComment(post.id, comment.id)"
-                          class="text-gray-400 hover:text-red-500 transition text-sm"
-                          title="Delete comment">
-                          <span class="material-symbols-outlined text-base">delete</span>
-                        </button>
-                      </div>
-                    </div>
-                    <p class="text-gray-200 text-sm">{{ comment.content }}</p>
-                  </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between mb-2">
+                <div class="flex-1 min-w-0">
+                  <p class="text-orange-500 font-bold text-sm sm:text-base truncate">{{ post.author }}</p>
+                  <p class="text-gray-400 text-xs sm:text-sm">{{ formatDate(post.timestamp) }}</p>
                 </div>
-              </div>
-
-
-              <!-- Add Comment Form -->
-              <div class="flex items-stretch mt-3">
-                <input v-model="post.newComment" placeholder="Write a comment..." @keyup.enter="addComment(post)"
-                       class="flex-1 bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-l focus:outline-none focus:ring-1 focus:ring-orange-500 text-xs sm:text-sm min-w-0">
-                <button @click="addComment(post)"
-                        class="bg-orange-500 hover:bg-orange-600 px-3 sm:px-4 py-2 rounded-r transition text-xs sm:text-sm font-medium whitespace-nowrap">
-                  <span class="hidden sm:inline">Comment</span>
-                  <span class="sm:hidden">💬</span>
+                <button v-if="currentUser?.uid === post.userId" @click="deletePost(post.id)"
+                        class="text-gray-400 hover:text-orange-500 transition ml-2 flex-shrink-0">
+                  <span class="material-symbols-outlined text-lg sm:text-xl">delete</span>
                 </button>
               </div>
+              <p class="text-white mb-3 sm:mb-4 text-sm sm:text-base break-words">{{ post.content }}</p>
+
+              <!-- Comments Section -->
+              <div class="mt-3 sm:mt-4 border-t border-gray-700 pt-3 sm:pt-4">
+                <div v-for="comment in post.comments" :key="comment.id"
+                  class="bg-gray-700 bg-opacity-50 rounded-lg p-3">
+                  <div class="flex items-start">
+                    <div class="w-8 h-8 rounded-full border border-orange-500 flex items-center justify-center mr-3">
+                      <span class="material-symbols-outlined text-orange-500 text-sm unselectable">person</span>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between mb-1">
+                        <p class="text-orange-400 text-sm font-medium">{{ comment.author }}</p>
+                        <div class="flex items-center gap-2">
+                          <p class="text-gray-400 text-xs">{{ formatDate(comment.timestamp) }}</p>
+                          <button v-if="currentUser?.uid === comment.userId"
+                            @click="deleteComment(post.id, comment.id)"
+                            class="text-gray-400 hover:text-red-500 transition text-sm"
+                            title="Delete comment">
+                            <span class="material-symbols-outlined text-base">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                      <p class="text-gray-200 text-sm">{{ comment.content }}</p>
+                    </div>
+                  </div>
+                </div>
+
+
+                <!-- Add Comment Form -->
+                <div class="flex items-stretch mt-3">
+                  <input v-model="post.newComment" placeholder="Write a comment..." @keyup.enter="addComment(post)"
+                        class="flex-1 bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-l focus:outline-none focus:ring-1 focus:ring-orange-500 text-xs sm:text-sm min-w-0">
+                  <button @click="addComment(post)"
+                          class="bg-orange-500 hover:bg-orange-600 px-3 sm:px-4 py-2 rounded-r transition text-xs sm:text-sm font-medium whitespace-nowrap">
+                    <span class="hidden sm:inline">Comment</span>
+                    <span class="sm:hidden">💬</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- New Post Form (Fixed at bottom) -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-95 backdrop-blur-sm border-t border-gray-700 z-50">
-      <div class="p-3 sm:p-4 pb-safe">
-        <div class="max-w-6xl mx-auto">
-          <form @submit.prevent="addPost" class="flex items-stretch space-x-2 sm:space-x-4">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 border-orange-500 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-orange-500 text-sm sm:text-lg md:text-xl unselectable">person</span>
-            </div>
-            <input v-model="newPost" placeholder="What's on your mind?" required
-                   class="flex-1 bg-gray-700 text-white px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-l focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm sm:text-base min-w-0">
-            <button type="submit" class="bg-orange-500 hover:bg-orange-600 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-r transition font-bold text-sm sm:text-base whitespace-nowrap">
-              <span class="hidden sm:inline">POST</span>
-              <span class="sm:hidden">📝</span>
-            </button>
-          </form>
+      <!-- New Post Form (Fixed at bottom) -->
+      <div class="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-95 backdrop-blur-sm border-t border-gray-700 z-50">
+        <div class="p-3 sm:p-4 pb-safe">
+          <div class="max-w-6xl mx-auto">
+            <form @submit.prevent="addPost" class="flex items-stretch space-x-2 sm:space-x-4">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 border-orange-500 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-orange-500 text-sm sm:text-lg md:text-xl unselectable">person</span>
+              </div>
+              <input v-model="newPost" placeholder="What's on your mind?" required
+                    class="flex-1 bg-gray-700 text-white px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-l focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm sm:text-base min-w-0">
+              <button type="submit" class="bg-orange-500 hover:bg-orange-600 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-r transition font-bold text-sm sm:text-base whitespace-nowrap">
+                <span class="hidden sm:inline">POST</span>
+                <span class="sm:hidden">📝</span>
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>    
+  </div>
+
 </template>
 
 <script setup>
