@@ -38,23 +38,30 @@
 
             <!-- Comments Section -->
             <div class="mt-3 sm:mt-4 border-t border-gray-700 pt-3 sm:pt-4">
-              <div v-if="post.comments && post.comments.length > 0" class="space-y-3 sm:space-y-4 mb-3 sm:mb-4">
-                <div v-for="comment in post.comments" :key="comment.id"
-                     class="bg-gray-700 bg-opacity-50 rounded-lg p-2 sm:p-3">
-                  <div class="flex items-start space-x-2 sm:space-x-3">
-                    <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-orange-500 flex items-center justify-center flex-shrink-0">
-                      <span class="material-symbols-outlined text-orange-500 text-xs sm:text-sm unselectable">person</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center justify-between mb-1">
-                        <p class="text-orange-400 text-xs sm:text-sm font-medium truncate">{{ comment.author }}</p>
-                        <p class="text-gray-400 text-xs ml-2 flex-shrink-0">{{ formatDate(comment.timestamp) }}</p>
+              <div v-for="comment in post.comments" :key="comment.id"
+                class="bg-gray-700 bg-opacity-50 rounded-lg p-3">
+                <div class="flex items-start">
+                  <div class="w-8 h-8 rounded-full border border-orange-500 flex items-center justify-center mr-3">
+                    <span class="material-symbols-outlined text-orange-500 text-sm unselectable">person</span>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                      <p class="text-orange-400 text-sm font-medium">{{ comment.author }}</p>
+                      <div class="flex items-center gap-2">
+                        <p class="text-gray-400 text-xs">{{ formatDate(comment.timestamp) }}</p>
+                        <button v-if="currentUser?.uid === comment.userId"
+                          @click="deleteComment(post.id, comment.id)"
+                          class="text-gray-400 hover:text-red-500 transition text-sm"
+                          title="Delete comment">
+                          <span class="material-symbols-outlined text-base">delete</span>
+                        </button>
                       </div>
-                      <p class="text-gray-200 text-xs sm:text-sm break-words">{{ comment.content }}</p>
                     </div>
+                    <p class="text-gray-200 text-sm">{{ comment.content }}</p>
                   </div>
                 </div>
               </div>
+
 
               <!-- Add Comment Form -->
               <div class="flex items-stretch mt-3">
@@ -97,7 +104,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { db, auth } from '/src/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
-import { collection, addDoc, query, onSnapshot, doc, deleteDoc, updateDoc, serverTimestamp, arrayUnion } from 'firebase/firestore'
+import { collection, addDoc, query, onSnapshot, doc, deleteDoc, updateDoc, serverTimestamp, arrayUnion, getDoc } from 'firebase/firestore'
 
 const posts = ref([])
 const newPost = ref('')
@@ -235,6 +242,32 @@ const deletePost = async (postId) => {
     showAlert('Failed to delete post')
   }
 }
+
+const deleteComment = async (postId, commentId) => {
+  if (!currentUser.value) {
+    showAlert('Please sign in to delete comments')
+    return
+  }
+
+  if (!confirm('Are you sure you want to delete this comment?')) return
+
+  try {
+    const postRef = doc(db, 'forum', postId)
+    const postSnap = await getDoc(postRef)
+    if (!postSnap.exists()) throw new Error('Post not found')
+
+    const postData = postSnap.data()
+    const updatedComments = postData.comments.filter(comment => comment.id !== commentId)
+
+    await updateDoc(postRef, { comments: updatedComments })
+
+    showAlert('Comment deleted', 'success')
+  } catch (error) {
+    console.error('Error deleting comment:', error)
+    showAlert('Failed to delete comment')
+  }
+}
+
 </script>
 
 <style scoped>
