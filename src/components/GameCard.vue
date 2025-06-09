@@ -3,12 +3,12 @@
       class="relative group bg-gray-900 p-4 rounded-xl shadow-lg hover:shadow-orange-500/30 transition duration-300 aspect-[4/3] flex flex-col justify-between"
   >
     <!-- Game Image -->
-    <!-- Image -->
     <img
         :src="game.img"
         :alt="game.title"
-        class="w-full h-full object-cover rounded-lg unselectable"
+        class="w-full h-full object-cover rounded-lg unselectable cursor-pointer"
         draggable="false"
+        @click="goToGame"
     />
 
     <!-- Title -->
@@ -16,13 +16,13 @@
 
     <!-- Tags -->
     <div class="flex flex-wrap gap-2 text-sm text-orange-400 mb-10">
-  <span
-      v-for="(tag, index) in game.tags"
-      :key="index"
-      class="bg-gray-800 px-2 py-1 rounded"
-  >
-    {{ tag }}
-  </span>
+      <span
+          v-for="(tag, index) in game.tags"
+          :key="index"
+          class="bg-gray-800 px-2 py-1 rounded"
+      >
+        {{ tag }}
+      </span>
     </div>
 
     <!-- Play Button -->

@@ -15,6 +15,17 @@
               : 'border-blue-800'
         ]"
       ></canvas>
+
+      <!-- Badge notifications -->
+      <div v-if="badgeNotifications.length > 0" class="mt-4 space-y-2">
+        <div
+            v-for="(badge, index) in badgeNotifications"
+            :key="index"
+            class="bg-yellow-600 text-black px-4 py-2 rounded-lg animate-pulse"
+        >
+          🏆 Achievement Unlocked: {{ badge.name }}!
+        </div>
+      </div>
     </div>
 
     <!-- Right: Game Info -->
@@ -22,6 +33,16 @@
       <h2 class="text-3xl font-bold">Space Shooter</h2>
       <p class="text-sm">By: <span class="text-orange-400">Yaroslav Labunskiy</span></p>
 
+<<<<<<< HEAD
+=======
+      <!-- Game Stats -->
+      <div class="bg-white/10 rounded-lg p-4 space-y-2">
+        <h3 class="text-lg font-bold">Game Stats</h3>
+        <p class="text-sm">Games Played: {{ gameStats.gamesPlayed }}</p>
+        <p class="text-sm">Enemies Destroyed: {{ gameStats.enemiesDestroyed }}</p>
+      </div>
+
+>>>>>>> origin/main
       <!-- Difficulty -->
       <div class="flex gap-2">
         <button
@@ -108,22 +129,15 @@ import {getAuth} from "firebase/auth";
 
 import { giveBadge } from '/src/utils/badgeUtils';
 import { saveRecord } from '/src/utils/records.js'
+import { SPACESHOOTER_BADGES } from '/src/utils/badgesConfig.js'
 
 const router = useRouter()
 const canvas = ref(null)
 const ctx = ref(null)
 
 const canvasSize = 600
-const gameSpeed = ref(16) // 60fps
 
 const difficultyPresets = {
-  // 400px canvas
-  // easy: { enemySpeed: 1, spawnRate: 0.02, bulletSpeed: 8 },
-  // medium: { enemySpeed: 2, spawnRate: 0.03, bulletSpeed: 7 },
-  // hard: { enemySpeed: 3, spawnRate: 0.04, bulletSpeed: 6 }
-
-
-  // 600px canvas
   easy: { enemySpeed: 2, spawnRate: 0.04, bulletSpeed: 8 },
   medium: { enemySpeed: 3, spawnRate: 0.06, bulletSpeed: 7 },
   hard: { enemySpeed: 4, spawnRate: 0.08, bulletSpeed: 6 }
@@ -139,6 +153,7 @@ const gameState = ref({
   lastShotTime: 0,
   shootInterval: 150,
   isShooting: false,
+  gameOverTriggered: false,
   stars: [],
   gameOverAnimation: {
     active: false,
@@ -153,6 +168,17 @@ const isGameRunning = ref(false)
 const currentDifficulty = ref('medium')
 const crashed = ref(false)
 const glow = ref(false)
+const badgeNotifications = ref([])
+const gameStats = ref({
+  gamesPlayed: 0,
+  highScore: 0,
+  enemiesDestroyed: 0,
+  enemiesDestroyedThisGame: 0,
+  firstGameCompleted: false,
+  consecutiveWins: 0,
+  hardModeWins: 0,
+  perfectGames: 0
+})
 
 // Initialize stars for animated background
 const initStars = () => {
@@ -412,38 +438,6 @@ const drawGameOverAnimation = () => {
     const scale = 0.5 + (textProgress * 0.5) // Scale from 0.5 to 1.0
     const alpha = textProgress
 
-    // Pulsing effect
-    // const pulse = Math.sin(elapsed * 0.01) * 0.1 + 0.9
-    //
-    // ctx.value.globalAlpha = alpha
-    // ctx.value.textAlign = 'center'
-    // ctx.value.textBaseline = 'middle'
-    //
-    // // Shadow/glow effect
-    // ctx.value.shadowColor = '#ff0000'
-    // ctx.value.shadowBlur = 20 * pulse
-    //
-    // // Main text
-    // ctx.value.fillStyle = '#ffffff'
-    // ctx.value.font = `bold ${48 * scale * pulse}px Arial`
-    // ctx.value.fillText('GAME OVER', canvasSize / 2, canvasSize / 2 - 30)
-    //
-    // // Score text
-    // ctx.value.shadowBlur = 10
-    // ctx.value.fillStyle = '#ffaa00'
-    // ctx.value.font = `${24 * scale}px Arial`
-    // ctx.value.fillText(`Final Score: ${score.value}`, canvasSize / 2, canvasSize / 2 + 20)
-
-    // "Press Start to play again" text
-    // if (elapsed > 2000) {
-    //   const blinkAlpha = Math.sin(elapsed * 0.008) * 0.5 + 0.5
-    //   ctx.value.globalAlpha = alpha * blinkAlpha
-    //   ctx.value.shadowBlur = 5
-    //   ctx.value.fillStyle = '#aaaaaa'
-    //   ctx.value.font = `${16 * scale}px Arial`
-    //   ctx.value.fillText('Press Start to play again', canvasSize / 2, canvasSize / 2 + 60)
-    // }
-
     ctx.value.restore()
   }
 
@@ -510,6 +504,11 @@ const updateEnemies = () => {
 }
 
 const checkCollisions = () => {
+  // Don't check collisions if game is already over
+  if (crashed.value || gameState.value.gameOverTriggered) {
+    return;
+  }
+
   // Check bullet-enemy collisions
   for (let i = gameState.value.bullets.length - 1; i >= 0; i--) {
     const bullet = gameState.value.bullets[i]
@@ -532,6 +531,9 @@ const checkCollisions = () => {
           gameState.value.enemies.splice(j, 1)
           // Increase score
           score.value += (enemy.type === 'fast' ? 20 : 10)
+          // Update stats for both total and this game
+          gameStats.value.enemiesDestroyed++
+          gameStats.value.enemiesDestroyedThisGame++
         }
 
         // Glow effect
@@ -553,22 +555,92 @@ const checkCollisions = () => {
 
       crashed.value = true
       triggerGameOver()
-      return
+      return // Exit immediately after triggering game over
     }
   }
 }
 
 const triggerGameOver = () => {
+  // Prevent multiple triggers
+  if (gameState.value.gameOverTriggered) {
+    return;
+  }
+
+  gameState.value.gameOverTriggered = true;
+
   // Initialize game over animation
   gameState.value.gameOverAnimation.active = true
   gameState.value.gameOverAnimation.startTime = Date.now()
   initGameOverParticles()
 
+  // Update game stats
+  gameStats.value.gamesPlayed++
+  if (score.value > gameStats.value.highScore) {
+    gameStats.value.highScore = score.value
+  }
+  saveGameStats()
+
+  // Check for achievements
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+    checkAndAwardBadges(user.uid, score.value, currentDifficulty.value);
+    saveRecord("spaceshooter", score.value, currentDifficulty.value, true)
+  }
+
   // Stop the game after a short delay to show explosion
   setTimeout(() => {
     stopGame()
   }, 700)
+}
 
+async function checkAndAwardBadges(userId, finalScore, difficulty) {
+  try {
+    const badges = [];
+
+    // First game achievement
+    if (gameStats.value.gamesPlayed === 1) {
+      const awarded = await giveBadge(userId, 'spaceshooter', SPACESHOOTER_BADGES.FIRST_GAME);
+      if (awarded) badges.push({ name: 'Space Pilot' });
+    }
+
+    // Score-based achievements by difficulty
+    const scoreAchievements = [
+      { threshold: 1000, badges: { easy: SPACESHOOTER_BADGES.SCORE_1000_EASY, medium: SPACESHOOTER_BADGES.SCORE_1000_MEDIUM, hard: SPACESHOOTER_BADGES.SCORE_1000_HARD }, names: { easy: 'Rookie Scorer', medium: 'Cadet Scorer', hard: 'Veteran Scorer' }},
+      { threshold: 3000, badges: { easy: SPACESHOOTER_BADGES.SCORE_3000_EASY, medium: SPACESHOOTER_BADGES.SCORE_3000_MEDIUM, hard: SPACESHOOTER_BADGES.SCORE_3000_HARD }, names: { easy: 'Elite Pilot', medium: 'Ace Pilot', hard: 'Commander' }},
+      { threshold: 5000, badges: { easy: SPACESHOOTER_BADGES.SCORE_5000_EASY, medium: SPACESHOOTER_BADGES.SCORE_5000_MEDIUM, hard: SPACESHOOTER_BADGES.SCORE_5000_HARD }, names: { easy: 'Space Legend', medium: 'Galaxy Hero', hard: 'Universe Master' }}
+    ];
+
+    for (const achievement of scoreAchievements) {
+      if (finalScore >= achievement.threshold && achievement.badges[difficulty]) {
+        const awarded = await giveBadge(userId, 'spaceshooter', achievement.badges[difficulty]);
+        if (awarded) badges.push({ name: achievement.names[difficulty] });
+      }
+    }
+
+    // Enemy destruction achievements (per game)
+    const enemiesDestroyedThisGame = gameStats.value.enemiesDestroyedThisGame;
+
+    if (enemiesDestroyedThisGame >= 100) {
+      const awarded = await giveBadge(userId, 'spaceshooter', SPACESHOOTER_BADGES.ENEMIES_100);
+      if (awarded) badges.push({ name: 'Squadron Destroyer' });
+    }
+
+    if (enemiesDestroyedThisGame >= 300) {
+      const awarded = await giveBadge(userId, 'spaceshooter', SPACESHOOTER_BADGES.ENEMIES_300);
+      if (awarded) badges.push({ name: 'Fleet Annihilator' });
+    }
+
+    // Show notifications if any badges were awarded
+    if (badges.length > 0) {
+      badgeNotifications.value = badges;
+      setTimeout(() => {
+        badgeNotifications.value = [];
+      }, 5000);
+    }
+  } catch (error) {
+    console.error('Badge check failed:', error);
+  }
 }
 
 const gameLoop = () => {
@@ -660,7 +732,6 @@ const stopGame = () => {
   if (gameState.value.animationId) {
     cancelAnimationFrame(gameState.value.animationId)
   }
-  checkRecord()
 }
 
 const toggleGame = () => {
@@ -668,14 +739,6 @@ const toggleGame = () => {
     stopGame()
   } else {
     startGame()
-  }
-}
-
-const checkRecord = () => {
-  const auth = getAuth();
-  const user = auth.currentUser;
-  if (user) {
-    saveRecord("spaceshooter", score.value, currentDifficulty.value, true)
   }
 }
 
@@ -688,14 +751,30 @@ const resetGame = () => {
   gameState.value.lastShotTime = 0
   gameState.value.gameOverAnimation.active = false
   gameState.value.gameOverAnimation.particles = []
+  gameState.value.gameOverTriggered = false // Reset the flag
 
   score.value = 0
   crashed.value = false
   glow.value = false
+  gameStats.value.enemiesDestroyedThisGame = 0 // Reset current game enemy count
 
   // Draw initial state
   drawBackground()
   drawPlayer()
+}
+
+
+const saveGameStats = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('spaceshooter_stats', JSON.stringify(gameStats.value))
+  }
+}
+
+const loadGameStats = () => {
+  const saved = localStorage.getItem('spaceshooter_stats')
+  if (saved) {
+    gameStats.value = { ...gameStats.value, ...JSON.parse(saved) }
+  }
 }
 
 const goHome = () => {
@@ -708,6 +787,7 @@ onMounted(() => {
   initStars()
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keyup', handleKeyUp)
+  loadGameStats()
 
   // Initial drawing
   resetGame()

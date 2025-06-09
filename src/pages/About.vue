@@ -12,7 +12,7 @@
           <span class="material-symbols-outlined text-orange-500 text-4xl unselectable" style="font-size: 70px !important">person</span>
         </div>
         <p class="text-orange-500 font-bold text-lg">Oleksii Malanii</p>
-        <p class="text-white text-sm">Leader</p>
+        <p class="text-white text-sm">Team Leader</p>
         <p class="text-white text-sm">Front-end Developer</p>
       </div>
       <div class="flex flex-col items-center text-center">
@@ -28,16 +28,16 @@
           <span class="material-symbols-outlined text-orange-500 text-4xl unselectable" style="font-size: 70px !important">person</span>
         </div>
         <p class="text-orange-500 font-bold text-lg">Andrii Kohut</p>
-        <p class="text-white text-sm">Place Holder</p>
-        <p class="text-white text-sm">Place Holder</p>
+        <p class="text-white text-sm">Tech Leader</p>
+        <p class="text-white text-sm">Back-end Developer</p>
       </div>
       <div class="flex flex-col items-center text-center">
         <div class="w-24 h-24 rounded-full border-4 border-orange-500 flex items-center justify-center mb-4">
           <span class="material-symbols-outlined text-orange-500 text-4xl unselectable" style="font-size: 70px !important">person</span>
         </div>
         <p class="text-orange-500 font-bold text-lg">Labunskiy Yaroslav</p>
-        <p class="text-white text-sm">Place Holder</p>
-        <p class="text-white text-sm">Place Holder</p>
+        <p class="text-white text-sm">QA</p>
+        <p class="text-white text-sm">Back-end Developer</p>
       </div>
     </div>
 

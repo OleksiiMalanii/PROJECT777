@@ -36,6 +36,20 @@
         </div>
       </div>
       <p class="text-red-500 font-bold mt-4">{{ gameOver }}</p>
+<<<<<<< HEAD
+=======
+
+      <!-- Badge notifications -->
+      <div v-if="badgeNotifications.length > 0" class="mt-4 space-y-2">
+        <div
+            v-for="(badge, index) in badgeNotifications"
+            :key="index"
+            class="bg-yellow-600 text-black px-4 py-2 rounded-lg animate-pulse"
+        >
+          🏆 Achievement Unlocked: {{ badge.name }}!
+        </div>
+      </div>
+>>>>>>> origin/main
     </div>
 
     <!-- Game Info Right -->
@@ -43,6 +57,16 @@
       <h2 class="text-3xl font-bold">Minesweeper</h2>
       <p class="text-sm">By: <span class="text-orange-400">Denys Novosad</span></p>
 
+<<<<<<< HEAD
+=======
+      <!-- Game Stats -->
+      <div class="bg-white/10 rounded-lg p-4 space-y-2">
+        <h3 class="text-lg font-bold">Game Stats</h3>
+        <p class="text-sm">Games Played: {{ gameStats.gamesPlayed }}</p>
+        <p class="text-sm">Games Won: {{ gameStats.gamesWon }}</p>
+      </div>
+
+>>>>>>> origin/main
       <!-- Difficulty -->
       <div class="flex gap-2">
         <button
@@ -100,13 +124,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { giveBadge } from '/src/utils/badgeUtils';
 import { saveRecord } from '/src/utils/records.js'
+import { MINESWEEPER_BADGES } from '/src/utils/badgesConfig.js'
 
 import { getAuth } from "firebase/auth"
+
 
 const router = useRouter()
 
@@ -114,6 +140,19 @@ const tileSize = 40
 const gapSize = 3
 const timer = ref(0)
 const timerInterval = ref(null)
+const badgeNotifications = ref([])
+const gameStats = ref({
+  gamesPlayed: 0,
+  gamesWon: 0,
+  bestTimes: {
+    easy: null,
+    medium: null,
+    hard: null
+  },
+  firstGameCompleted: false,
+  perfectGames: 0, // Ігри без використання прапорців
+  consecutiveWins: 0
+})
 
 const difficulty_presets = {
   easy: { rows: 9, cols: 9, mines: 9 },
@@ -128,6 +167,7 @@ const firstClick = ref(true)
 const wifemode = ref(false)
 const gameOver = ref("")
 const firstButton = ref("New Game")
+const usedFlags = ref(false) // Для відстеження використання прапорців
 
 const formattedTime = computed(() => {
   const minutes = Math.floor(timer.value / 60)
@@ -239,6 +279,7 @@ function handleTileClick(x, y) {
     countNeighborMines()
     startTimer()
     firstClick.value = false
+    usedFlags.value = false // Скидаємо прапорець використання флагів
   }
 
   revealTile(x, y)
@@ -249,29 +290,125 @@ function handleTileClick(x, y) {
     gameOver.value = "You've lost!"
     stopTimer()
     isGameRunning.value = false
+    gameStats.value.gamesPlayed++
+    gameStats.value.consecutiveWins = 0
+    saveGameStats()
   } else if (checkWin()) {
     gameOver.value = "Congrats! You've won!"
     stopTimer()
     isGameRunning.value = false
 
+    // Оновлюємо статистику
+    gameStats.value.gamesPlayed++
+    gameStats.value.gamesWon++
+    gameStats.value.consecutiveWins++
+
+    const difficultyName = getDifficultyLabel()
+    const currentTime = timer.value
+
+    // Оновлюємо найкращий час
+    if (!gameStats.value.bestTimes[difficultyName] || currentTime < gameStats.value.bestTimes[difficultyName]) {
+      gameStats.value.bestTimes[difficultyName] = currentTime
+    }
+
+    // Перевіряємо досконалість гри (без прапорців)
+    if (!usedFlags.value) {
+      gameStats.value.perfectGames++
+    }
+
+    saveGameStats()
+
     const auth = getAuth();
     const user = auth.currentUser;
     if (user) {
-      checkAndAwardBadges(user.uid, difficulty.value, timer.value);
-
-      saveRecord("minesweeper", timer.value, getDifficultyLabel(), false)
+      checkAndAwardBadges(user.uid, difficultyName, timer.value, !usedFlags.value);
+      saveRecord("minesweeper", currentTime, difficultyName, false)
     }
   }
 }
 
-async function checkAndAwardBadges(userId, difficulty, timeElapsed) {
+async function checkAndAwardBadges(userId, difficultyName, timeElapsed, isPerfectGame) {
   try {
-    if (difficulty === "medium" && timeElapsed < 40) {
-      await giveBadge(userId, 'minesweeper', 'fasthead');
+    const badges = [];
+
+    // Перша гра
+    if (!gameStats.value.firstGameCompleted) {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.FIRST_GAME);
+      if (success) {
+        badges.push({
+          name: 'First Blood',
+          description: 'Complete your first game'
+        });
+        gameStats.value.firstGameCompleted = true;
+      }
     }
 
-    if (difficulty === "hard") {
-      await giveBadge(userId, 'minesweeper', 'survivor');
+    // Швидкісні досягнення
+    if (difficultyName === 'easy' && timeElapsed <= 30) {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.SPEEDRUNNER_EASY);
+      if (success) badges.push({
+        name: 'Speed Demon',
+        description: 'Complete Easy in under 30 seconds'
+      });
+    }
+
+    if (difficultyName === 'medium' && timeElapsed <= 60) {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.SPEEDRUNNER_MEDIUM);
+      if (success) badges.push({
+        name: 'Fast Head',
+        description: 'Complete Medium in under 60 seconds'
+      });
+    }
+
+    if (difficultyName === 'hard' && timeElapsed <= 120) {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.SPEEDRUNNER_HARD);
+      if (success) badges.push({
+        name: 'Lightning Fast',
+        description: 'Complete Hard in under 120 seconds'
+      });
+    }
+
+    // Складність Hard
+    if (difficultyName === 'hard') {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.HARDCORE);
+      if (success) badges.push({
+        name: 'Survivor',
+        description: 'Complete Hard difficulty'
+      });
+    }
+
+    // Досконала гра (без прапорців)
+    if (isPerfectGame) {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.FLAWLESS);
+      if (success) badges.push({
+        name: 'Flawless Victory',
+        description: 'Win without using flags'
+      });
+    }
+
+    // Перфекціоніст (5 досконалих ігор)
+    if (gameStats.value.perfectGames >= 5) {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.PERFECTIONIST);
+      if (success) badges.push({
+        name: 'Perfectionist',
+        description: 'Win 5 games without using flags'
+      });
+    }
+
+    // Ветеран (10 виграних ігор)
+    if (gameStats.value.gamesWon >= 10) {
+      const success = await giveBadge(userId, 'minesweeper', MINESWEEPER_BADGES.VETERAN);
+      if (success) badges.push({
+        name: 'Veteran Player',
+        description: 'Win 10 games'
+      });
+    }
+
+    if (badges.length > 0) {
+      badgeNotifications.value = badges;
+      setTimeout(() => {
+        badgeNotifications.value = [];
+      }, 5000);
     }
   } catch (error) {
     console.error('Badge check failed:', error);
@@ -303,6 +440,7 @@ function toggleFlag(x, y) {
   const tile = grid.value[x][y]
   if (!tile.isClicked) {
     tile.isFlagged = !tile.isFlagged
+    usedFlags.value = true // Позначаємо, що використовували прапорці
   }
 }
 
@@ -321,6 +459,8 @@ function resetGame() {
   gameOver.value = ""
   isGameRunning.value = true
   firstClick.value = true
+  usedFlags.value = false
+  badgeNotifications.value = []
   createGrid()
 }
 
@@ -341,8 +481,20 @@ function stopTimer() {
 }
 
 function exitGame() {
-  //userStore.addGameToHistory('Minesweeper', 0)
   router.push('/games')
+}
+
+function saveGameStats() {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('minesweeper_stats', JSON.stringify(gameStats.value))
+  }
+}
+
+function loadGameStats() {
+  const saved = localStorage.getItem('minesweeper_stats')
+  if (saved) {
+    gameStats.value = { ...gameStats.value, ...JSON.parse(saved) }
+  }
 }
 
 const boardFlat = computed(() => grid.value.flat())
@@ -359,7 +511,10 @@ const flagCount = computed(() => {
   return grid.value.flat().filter(tile => tile.isFlagged).length
 })
 
-createGrid()
+onMounted(() => {
+  loadGameStats()
+  createGrid()
+})
 </script>
 
 <style scoped>

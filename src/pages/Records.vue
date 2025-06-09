@@ -21,7 +21,10 @@
 
       <div v-if="records.tetris">
         <h2 class="text-2xl text-orange-500 mb-2">Tetris</h2>
-        <p>Best Score: {{ records.tetris }}</p>
+        <ul class="list-disc list-inside space-y-1">
+          <li v-if="records.tetris.easy">Easy: {{ records.tetris.easy }}</li>
+          <li v-if="records.tetris.hard">Hard: {{ records.tetris.hard }}</li>
+        </ul>
       </div>
 
       <div v-if="records.snake">

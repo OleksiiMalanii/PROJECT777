@@ -36,7 +36,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import {saveRecord} from "/src/utils/records.js";
+import { saveRecord } from "/src/utils/records.js";
 
 const router = useRouter()
 const score = ref(0)

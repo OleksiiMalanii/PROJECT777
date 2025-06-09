@@ -1,19 +1,19 @@
 <template>
-  <div class="flex h-screen font-sci-fi text-white">
+  <div class="flex h-screen text-white font-sci-fi">
     <!-- Left: Game Area -->
     <div class="flex flex-col items-center justify-center flex-1">
       <div class="text-lg mb-1">Score: {{ score }}</div>
       <canvas
           ref="canvas"
-          width="400"
-          height="400"
+          width="500"
+          height="500"
           :class="['bg-black border-4 rounded-lg transition-shadow duration-200',
           crashed ? 'border-red-500 shadow-[0_0_20px_#ff0000]' : glow ? 'border-blue-600 shadow-[0_0_20px_#0000FF]' : 'border-blue-800 ']"
       ></canvas>
     </div>
 
     <!-- Right: Game Info -->
-    <div class="w-full md:w-1/3 p-6 flex flex-col justify-center space-y-6 border-l border-white/10">
+    <div class="w-full md:w-1/3 p-6 flex  flex-col justify-center space-y-6 border-l border-white/10">
       <h2 class="text-3xl font-bold">Snake Game</h2>
       <p class="text-sm">By: <span class="text-orange-400">Yaroslav Labunskiy</span></p>
 
@@ -87,14 +87,14 @@ const router = useRouter()
 const canvas = ref(null)
 const ctx = ref(null)
 
-const gridSize = 20
-const canvasSize = 400
+const gridSize = 25
+const canvasSize = 500
 const numCells = canvasSize / gridSize
 let gameInterval = null
 
 const difficultyPresets = {
   easy: 150,
-  medium: 120,  // Виправлено: було 'mid', тепер 'medium'
+  medium: 120,
   hard: 90,
 }
 
@@ -342,3 +342,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKey)
 })
 </script>
+
+<style>
+.font-sci-fi {
+  font-family: 'Orbitron', sans-serif;
+}
+</style>
