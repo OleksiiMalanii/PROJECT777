@@ -36,6 +36,8 @@
         </div>
       </div>
       <p class="text-red-500 font-bold mt-4">{{ gameOver }}</p>
+<<<<<<< HEAD
+=======
 
       <!-- Badge notifications -->
       <div v-if="badgeNotifications.length > 0" class="mt-4 space-y-2">
@@ -47,6 +49,7 @@
           🏆 Achievement Unlocked: {{ badge.name }}!
         </div>
       </div>
+>>>>>>> origin/main
     </div>
 
     <!-- Game Info Right -->
@@ -54,6 +57,8 @@
       <h2 class="text-3xl font-bold">Minesweeper</h2>
       <p class="text-sm">By: <span class="text-orange-400">Denys Novosad</span></p>
 
+<<<<<<< HEAD
+=======
       <!-- Game Stats -->
       <div class="bg-white/10 rounded-lg p-4 space-y-2">
         <h3 class="text-lg font-bold">Game Stats</h3>
@@ -61,6 +66,7 @@
         <p class="text-sm">Games Won: {{ gameStats.gamesWon }}</p>
       </div>
 
+>>>>>>> origin/main
       <!-- Difficulty -->
       <div class="flex gap-2">
         <button

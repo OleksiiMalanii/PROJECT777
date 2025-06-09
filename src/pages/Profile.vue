@@ -54,7 +54,6 @@
         Edit Profile
       </button>
     </div>
-
     <!-- Modal -->
     <div v-if="showModal" class="fixed inset-0 bg-black opacity-90 flex z-50">
     </div>

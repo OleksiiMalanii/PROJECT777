@@ -33,6 +33,8 @@
       <h2 class="text-3xl font-bold">Space Shooter</h2>
       <p class="text-sm">By: <span class="text-orange-400">Yaroslav Labunskiy</span></p>
 
+<<<<<<< HEAD
+=======
       <!-- Game Stats -->
       <div class="bg-white/10 rounded-lg p-4 space-y-2">
         <h3 class="text-lg font-bold">Game Stats</h3>
@@ -40,6 +42,7 @@
         <p class="text-sm">Enemies Destroyed: {{ gameStats.enemiesDestroyed }}</p>
       </div>
 
+>>>>>>> origin/main
       <!-- Difficulty -->
       <div class="flex gap-2">
         <button
